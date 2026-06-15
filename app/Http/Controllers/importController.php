@@ -14,47 +14,31 @@ class importController extends Controller
 
             $privileges = (new FastExcel)->sheet(1)->import($path);
            
-           $cnn = [][];
-            
+            $cnn = [][];
+           
             foreach ($privileges as $privilege) {
-                
-                DB::table('privileges')->insert([
-                        'name' => $privilege['libelle'],
-                        'url' =>  $privilege['url'],
-                        'description' =>  $privilege['description'],
-                        'type' =>  $privilege['type'],
-                        'enable' => true,
-                        'application_id' => 15,
-                        'created_at'=> now(),
-                        'updated_at'=> now(),
-                    
-                ]);*/
-                "SITE" => "01"
-      "Matricule" => "   523"
-      "Nom" => "BUETO WANGUAKU            "
-      "NUMERO INSS" => "11965344372A"
-      "LIBELLE SITE" => "KWILU-NGONGO"
-      "CATEGORIE" => "01"
-      "LIBELLE CATEGORIE" => "PERSONNEL D'EXECUTION"
-      "BRUT INSS" => 541980.2
-      "ALLOC FAM" => 8100
-      "COTISATION INSS" => 27099.01
-      "Libellé Paie" => "PAIE NORMALE"
+                $nomBrut = explode(" ", trim($employeHF->NomEmploye));
+                $prenom = null;
 
-                $cnn = ['NUMERO INSS'][];
-                $cnn = ['Matricule'][];
-                $cnn = ['Nom'][];
-                $cnn = ['Post noms'][];
-                $cnn = ['Prenoms'][];
-                $cnn = ['Type travailleur(1=Travailleur , 2=Assimile)'][];
-                $cnn = ['Commune  ou Territoire affectation'][];
-                $cnn = ['Montant Cotise'][];
-                $cnn = ['Nbre De Jours de travail'][];
-                $cnn = ['Nbre De heure de travail'][];
-                $cnn = ['Montant Brut Imposable'][];
-                $cnn = ['IPR'][];
+                if (count($nomBrut) === 3 && !trim($nomBrut[1])) {
+                    $postnom = trim($nomBrut[2]);
+                } else {
+                    $postnom = trim($nomBrut[1]);
+                    $prenom = $nomBrut[2] ?? null;
+                }
 
-               // $cnn['numero'][] = $privilege['libelle'],
+                $cnn = ['NUMERO INSS'][] = $privilege['NUMERO INSS'];
+                $cnn = ['Matricule'][] = $privilege['Matricule'];
+                $cnn = ['Nom'][] = $privilege['Nom'];
+                $cnn = ['Post noms'][] = $privilege['Nom'];
+                $cnn = ['Prenoms'][] = $privilege['Nom'];
+                $cnn = ['Type travailleur(1=Travailleur , 2=Assimile)'][] = '';
+                $cnn = ['Commune  ou Territoire affectation'][] = $privilege['LIBELLE SITE'];
+                $cnn = ['Montant Cotise'][] = $privilege['COTISATION INSS'];
+                $cnn = ['Nbre De Jours de travail'][] = '';
+                $cnn = ['Nbre De heure de travail'][] = '';
+                $cnn = ['Montant Brut Imposable'][] = $privilege['BRUT INSS'];
+                $cnn = ['IPR'][] = '';              
                     
             }
         }
