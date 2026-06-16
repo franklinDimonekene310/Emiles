@@ -1,0 +1,14 @@
+.btn {
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: 'Courier New', Courier, monospace;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    background-color: rgb(94, 94, 234);
+    font-weight: bold;
+    border:none;
+}
+
+a {
+    text-decoration: none;
+}

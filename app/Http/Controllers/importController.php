@@ -14,10 +14,10 @@ class importController extends Controller
 
             $privileges = (new FastExcel)->sheet(1)->import($path);
            
-            $cnn = [][];
+            $cnn = [];
            
             foreach ($privileges as $privilege) {
-                $nomBrut = explode(" ", trim($employeHF->NomEmploye));
+                $nomBrut = explode(" ", trim($privilege['Nom']));
                 $prenom = null;
 
                 if (count($nomBrut) === 3 && !trim($nomBrut[1])) {
@@ -27,20 +27,22 @@ class importController extends Controller
                     $prenom = $nomBrut[2] ?? null;
                 }
 
-                $cnn = ['NUMERO INSS'][] = $privilege['NUMERO INSS'];
-                $cnn = ['Matricule'][] = $privilege['Matricule'];
-                $cnn = ['Nom'][] = $privilege['Nom'];
-                $cnn = ['Post noms'][] = $privilege['Nom'];
-                $cnn = ['Prenoms'][] = $privilege['Nom'];
-                $cnn = ['Type travailleur(1=Travailleur , 2=Assimile)'][] = '';
-                $cnn = ['Commune  ou Territoire affectation'][] = $privilege['LIBELLE SITE'];
-                $cnn = ['Montant Cotise'][] = $privilege['COTISATION INSS'];
-                $cnn = ['Nbre De Jours de travail'][] = '';
-                $cnn = ['Nbre De heure de travail'][] = '';
-                $cnn = ['Montant Brut Imposable'][] = $privilege['BRUT INSS'];
-                $cnn = ['IPR'][] = '';              
+                $cnn['NUMERO INSS'][] = $privilege['NUMERO INSS'];
+                $cnn['Matricule'][] = $privilege['Matricule'];
+                $cnn['Nom'][] = $nomBrut[0];
+                $cnn['Post noms'][] =  $postnom;
+                $cnn['Prenoms'][] = $prenom;
+                $cnn['Type travailleur(1=Travailleur , 2=Assimile)'][] = '';
+                $cnn['Commune  ou Territoire affectation'][] = $privilege['LIBELLE SITE'];
+                $cnn['Montant Cotise'][] = $privilege['COTISATION INSS'];
+                $cnn['Nbre De Jours de travail'][] = '';
+                $cnn['Nbre De heure de travail'][] = '';
+                $cnn['Montant Brut Imposable'][] = $privilege['BRUT INSS'];
+                $cnn['IPR'][] = '';              
                     
             }
+
+            dd($cnn);
         }
         
 }

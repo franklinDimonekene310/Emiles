@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Excel Export</title>
-    
+    <link rel="stylesheet" href="{{asset('style.css')}}" type="text/css">
 </head>
 <body>
     <h1>Importation du Fichier Excel</h1>
@@ -16,5 +16,7 @@
         Ad mollitia rerum exercitationem officiis consectetur necessitatibus eligendi voluptatum, minus neque quam debitis? Illum eos dolore quo cum beatae aspernatur quaerat non porro, perferendis, sed quos obcaecati laboriosam exercitationem molestiae!
         Cum ipsa consectetur cumque itaque commodi harum architecto facere quisquam asperiores, molestias, mollitia quia non, temporibus corporis! Accusamus modi possimus ab itaque quis minima obcaecati ullam, reiciendis error harum debitis.
     </p>
+    <button class="btn">Cliquer</button>
+    <a class="btn" href="{{ route('import')}}">Cliquer</a>
 </body>
 </html>
