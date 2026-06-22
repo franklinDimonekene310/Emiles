@@ -11,8 +11,9 @@ class importController extends Controller
     public function readExcelFile()
     {
         //$path = 'C:\Users\B.NIMI\Desktop\DIVERS - Copie\Cotisation Cnss.xlsx';
-        $path = 'C:\Users\HP\Downloads\ANNEXE CNSS AOUT 2024 BRUT.xlsx';
-
+        //$path = 'C:\Users\HP\Downloads\ANNEXE CNSS AOUT 2024 BRUT.xlsx';
+        $path = public_path('Cotisation Cnss.xlsx');
+        
         $privileges = (new FastExcel)->sheet(1)->import($path);
 
         $cnn = [];
@@ -44,9 +45,9 @@ class importController extends Controller
             // 'IPR'][] '',
             ];
         }
-
-        
-        (new FastExcel($cnn))->export('C:\Users\HP\Downloads\CNN TRAITE.xlsx');
+              
+        //(new FastExcel($cnn))->export('C:\Users\HP\Downloads\CNN TRAITE.xlsx');
+        (new FastExcel($cnn))->export(public_path('CNN TRAITE.xlsx'));
         dd('fait');
     }
 
@@ -79,13 +80,17 @@ class importController extends Controller
                 // Exemple : MANSIANTIMA MPUNANI 1
                 if (is_numeric($mots[2])) {
                     $nom = $mots[0];
-                    $postnom = $mots[1] . ' ' . $mots[2];
-                } else {
+                    $postnom = $mots[1] . ' ' . $mots[2];                  
+                }
+                elseif (in_array($mots[1], ['A', 'YE', 'WA', 'NE', 'DI'])) {
+                    $nom = $mots[0];
+                    $postnom = $mots[1] . ' ' . $mots[2];                    
+                }
+                else {
                     $nom = $mots[0];
                     $postnom = $mots[1];
                     $prenom = $mots[2];
                 }
-
                 break;
 
             case 4:
