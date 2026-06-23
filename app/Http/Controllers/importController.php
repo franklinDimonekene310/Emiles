@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Rap2hpoutre\FastExcel\FastExcel;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 use Illuminate\Http\Request;
 
 class importController extends Controller
@@ -19,15 +22,7 @@ class importController extends Controller
         $cnn = [];
         $nomBrut = [];
         foreach ($privileges as $privilege) {
-            /*$nomBrut = explode(" ", trim($privilege['Nom']));
-            $prenom = null;
-
-            if (count($nomBrut) === 3 && !trim($nomBrut[1])) {
-                $postnom = trim($nomBrut[2]);
-            } else {
-                $postnom = trim($nomBrut[1]);
-                $prenom = $nomBrut[2] ?? null;
-            }*/
+            
             $nomBrut = $this->decouperNom($privilege['Nom']);
 
             $cnn[] = [
@@ -39,16 +34,38 @@ class importController extends Controller
                 'Type travailleur(1=Travailleur , 2=Assimile)' => '',
                 'Commune  ou Territoire affectation' => (trim($privilege['LIBELLE SITE']) === 'KWILU-NGONGO') ? "MBANZA-NGUNGU" : "GOMBE",
                 'Montant Cotise' => $privilege['COTISATION INSS'],
-            // 'Nbre De Jours de travail' => '',
-            // 'Nbre De heure de travail' => '',
+                'Nbre De Jours de travail' => '26',
+                'Nbre De heure de travail' => '',
                 'Montant Brut Imposable' => $privilege['BRUT INSS'],
-            // 'IPR'][] '',
+                 'IPR' => '',
             ];
         }
-              
-        //(new FastExcel($cnn))->export('C:\Users\HP\Downloads\CNN TRAITE.xlsx');
-        (new FastExcel($cnn))->export(public_path('CNN TRAITE.xlsx'));
-        dd('fait');
+                      
+       //(new FastExcel($cnn))->export(public_path('CNN TRAITE.xlsx'));
+
+        /// Mise en forme avec phpSpread
+            $spreadsheet = new Spreadsheet();
+
+            $sheet = $spreadsheet->getActiveSheet();
+
+            // Écriture des données
+            $headers = array_keys($cnn[0]);
+            $rows = array_map('array_values', $cnn);
+
+            $sheet->fromArray($headers, null, 'A1');
+            $sheet->fromArray($rows, null, 'A2');
+            
+            // Appliquer Arial 10 à toute la feuille
+            $sheet->getStyle('A:Z')->applyFromArray([
+                'font' => [
+                    'name' => 'Arial',
+                    'size' => 10,
+                ],
+            ]);
+
+            $writer = new Xlsx($spreadsheet);
+            $writer->save(public_path('CNN TRAITE.xlsx'));
+            dd('fait');
     }
 
     private  function decouperNom($nomBrut)
@@ -123,5 +140,10 @@ class importController extends Controller
             'postnom' => $postnom,
             'prenom' => $prenom
         ];
+    }
+
+    public getPointage($matricules){
+        $employesHFSQL = DB::connection('hfsql')->table('EMPLOYES')
+        ->whereIn('Matricule', $matricule)->get()
     }
 }
