@@ -18,5 +18,8 @@
     </p>
     <button class="btn">Cliquer</button>
     <a class="btn" href="{{ route('import')}}">Cliquer</a>
+    <p>
+        <a class="btn" href="{{ route('pointage') }}" > Aller sur pointage</a>
+    </p>
 </body>
 </html>

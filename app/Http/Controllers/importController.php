@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Rap2hpoutre\FastExcel\FastExcel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use DB;
 
 use Illuminate\Http\Request;
 
@@ -142,8 +143,24 @@ class importController extends Controller
         ];
     }
 
-    public getPointage($matricules){
+    public function getPointage(){
+        // Role : Recuperation pointage dans la table D_RESULTATS_PAIE 
+        // contraintes : IDTypePaie = '01', DateCalcul = si le calcul se fait au mois de la paie concerné on considere la date du calcul
+        // si le calcul se fait au moins prochain, on prend la plage entre 25 du mois de la paie concerné et la date à laquelle le calcul se fait.
+        // si le pointage d'un employé excede 26 jours, on remet à 26 jours. Le pointage doit etre un entier.
+
+        $matricule = [
+               '142229'
+           ];
+
+        $matriculeTraites = [];
+        $matriculeNonTraites = [];
+
+         // $emp = DB::table('employes')->whereIn('Matricule', $matricule)->get('Matricule')->toArray();
+         // dd('Code utilisé pour copie des employés de HFSQL vers PostGres');
         $employesHFSQL = DB::connection('hfsql')->table('EMPLOYES')
-        ->whereIn('Matricule', $matricule)->get()
+        ->whereIn('Matricule', $matricule)->get();
+
+        dd($employesHFSQL);
     }
 }

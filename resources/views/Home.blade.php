@@ -34,6 +34,9 @@
         <p>
            <a href="{{ route('excel') }}"  rel="noopener noreferrer"> Aller sur excel</a>
         </p>
+        <p>
+           <a href="{{ route('pointage') }}"  rel="noopener noreferrer"> Aller sur pointage</a>
+        </p>
 
     <script src="{{ asset('script.js') }}"></script>
     </body>
