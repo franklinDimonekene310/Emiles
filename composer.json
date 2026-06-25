@@ -10,7 +10,8 @@
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "phpoffice/phpspreadsheet": "^5.8",
-        "rap2hpoutre/fast-excel": "^5.7"
+        "rap2hpoutre/fast-excel": "^5.7",
+        "yoramdelangen/laravel-pdo-odbc": "^2.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

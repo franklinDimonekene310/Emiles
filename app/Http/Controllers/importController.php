@@ -150,17 +150,25 @@ class importController extends Controller
         // si le pointage d'un employé excede 26 jours, on remet à 26 jours. Le pointage doit etre un entier.
 
         $matricule = [
-               '142229'
+               'KWILU BRIQUES'
            ];
-
+       
         $matriculeTraites = [];
         $matriculeNonTraites = [];
 
          // $emp = DB::table('employes')->whereIn('Matricule', $matricule)->get('Matricule')->toArray();
          // dd('Code utilisé pour copie des employés de HFSQL vers PostGres');
-        $employesHFSQL = DB::connection('hfsql')->table('EMPLOYES')
-        ->whereIn('Matricule', $matricule)->get();
+        $employesHFSQL = DB::connection('hfsql')->table('Societe')
+        ->get();
 
         dd($employesHFSQL);
+/*
+        $books = DB::connection('hfsql')
+            ->table('Societe')
+            ->where('RaisonSociale', 'KWILU BRIQUES')
+            ->get();
+
+            dd($books);*/
+
     }
 }

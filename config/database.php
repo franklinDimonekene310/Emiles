@@ -113,6 +113,15 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        'hfsql' => [
+            'driver' => 'odbc',
+            'dsn' => 'DRIVER={HFSQL};Server Name=wnscskn02;Server Port=4900;Database=SOCIETE;',
+            'database' =>'SOCIETE' ,
+            'username' => 'Admin',
+            'password' => 'infoHFADMIN',
+            //'charset' => 'utf8',
+        ],
+
     ],
 
     /*
