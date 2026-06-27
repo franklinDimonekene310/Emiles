@@ -21,5 +21,9 @@
     <p>
         <a class="btn" href="{{ route('pointage') }}" > Aller sur pointage</a>
     </p>
+
+    <div style="width: var(--largeur); height: var(--hauteur); background-color: var(--couleur-de-fond);">
+        fgfgfgf
+    </div>
 </body>
 </html>
