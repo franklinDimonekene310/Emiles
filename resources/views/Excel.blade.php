@@ -21,6 +21,13 @@
     <p>
         <a class="btn" href="{{ route('pointage') }}" > Aller sur pointage</a>
     </p>
+    <p>
+        <a class="btn" href="{{ route('createSqlRequete') }}" >Edit heure</a>
+    </p>
+    <div>
+         <a class="btn" href="{{ route('insertHS') }}" > créer heure</a>
+    </div>
+   
 
     <div style="width: var(--largeur); height: var(--hauteur); background-color: var(--couleur-de-fond);">
         fgfgfgf

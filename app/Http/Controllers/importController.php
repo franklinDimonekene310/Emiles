@@ -71,7 +71,7 @@ class importController extends Controller
 
     private  function decouperNom($nomBrut)
     {
-        // Nettoyage
+        // Nettoy_160
         $nomBrut = trim($nomBrut);
         $nomBrut = preg_replace('/\s+/', ' ', $nomBrut);
 
@@ -143,11 +143,11 @@ class importController extends Controller
         ];
     }
 
-    public function getPointage(){
-        // Role : Recuperation pointage dans la table D_RESULTATS_PAIE 
+    public function getPoint_160(){
+        // Role : Recuperation point_160 dans la table D_RESULTATS_PAIE 
         // contraintes : IDTypePaie = '01', DateCalcul = si le calcul se fait au mois de la paie concerné on considere la date du calcul
-        // si le calcul se fait au moins prochain, on prend la plage entre 25 du mois de la paie concerné et la date à laquelle le calcul se fait.
-        // si le pointage d'un employé excede 26 jours, on remet à 26 jours. Le pointage doit etre un entier.
+        // si le calcul se fait au moins prochain, on prend la pl_160 entre 25 du mois de la paie concerné et la date à laquelle le calcul se fait.
+        // si le point_160 d'un employé excede 26 jours, on remet à 26 jours. Le point_160 doit etre un entier.
 
         $matricule = [
                'KWILU BRIQUES'
@@ -170,5 +170,109 @@ class importController extends Controller
 
             dd($books);*/
 
+    }
+
+
+    public function createSqlRequete() {
+        $path = 'C:\Users\B.NIMI\Desktop\DIVERS\heure_employes.xlsx';
+       // $path = public_path('Cotisation Cnss.xlsx');        
+        $lignes = (new FastExcel)->sheet(1)->import($path);
+
+        $case_160 = [];
+        $case_200 = [];
+        $matricules = [];
+
+        foreach ($lignes as $ligne) {
+
+            // On conserve exactement la valeur du fichier Excel
+            // $matricule = $ligne['matricule'];
+            $matricule = str_pad($ligne['matricule'], 6, ' ', STR_PAD_LEFT);
+
+            $_160 = (int) $ligne['_160'];
+            $_200 = (int) $ligne['_200'];
+
+            $case_160[] = "WHEN '{$matricule}' THEN {$_160}";
+            $case_200[] = "WHEN '{$matricule}' THEN {$_200}";
+
+            $matricules[] = "'{$matricule}'";
+        }
+
+        $sql = "
+            UPDATE HS_MENSUEL
+            SET
+                NbreHS160 = NbreHS160 + CASE Matricule
+                    " . implode("\n        ", $case_160) . "
+                    ELSE 0
+                END,
+
+                NbreHS200 = NbreHS200 + CASE Matricule
+                    " . implode("\n        ", $case_200) . "
+                    ELSE 0
+                END
+
+            WHERE Matricule IN (" . implode(',', $matricules) . ")
+            AND AnneeMoisHS = '202606'
+            AND DateCreationHS = '20260629';
+            ";
+        dd($sql);
+    }
+
+    public function insertHS() {
+
+        $path = 'C:\Users\B.NIMI\Desktop\DIVERS\heure_employes.xlsx';
+       // $path = public_path('Cotisation Cnss.xlsx');        
+        $lignes = (new FastExcel)->sheet(4)->import($path);
+
+        $case_160 = [];
+        $case_200 = [];
+        $matricules = [];
+
+        $insertValues = [];
+
+        foreach ($lignes as $ligne) {
+
+            $matricule = str_pad($ligne['matricule'], 6, ' ', STR_PAD_LEFT);
+
+            $hs160 = (float) $ligne['_160'];
+            $hs200 = (float) $ligne['_200'];
+
+            $matriculeAnneeMois = $matricule . ',202606';
+
+            $insertValues[] = "(
+                '{$matricule}',
+                '202606',
+                0,
+                0,
+                0,
+                0,
+                {$hs160},
+                {$hs200},
+                0,
+                '20260629',
+                '{$matriculeAnneeMois}'
+            )";
+        }
+
+
+        $sqlInsert = "
+            INSERT INTO HS_MENSUEL
+            (
+                Matricule,
+                AnneeMoisHS,
+                NbreHS35,
+                NbreHS37_5,
+                NbreHS100,
+                NbreHS130,
+                NbreHS160,
+                NbreHS200,
+                CodeTraitHsMens,
+                DateCreationHS,
+                Matricule_AnneeMois
+            )
+            VALUES
+            " . implode(",\n", $insertValues) . ";
+            ";
+            dd($sqlInsert);
+            //DB::statement($sqlInsert);
     }
 }

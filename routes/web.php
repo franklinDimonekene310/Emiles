@@ -15,3 +15,5 @@ Route::get('/excel', function () {
 
 Route::get('/import', [importController::class, 'readExcelFile'])->name('import');
 Route::get('/pointage', [importController::class, 'getPointage'])->name('pointage');
+Route::get('/heures', [importController::class, 'createSqlRequete'])->name('createSqlRequete');
+Route::get('/insert', [importController::class, 'insertHS'])->name('insertHS');
