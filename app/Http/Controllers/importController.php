@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Rap2hpoutre\FastExcel\FastExcel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use DB;
 
 use Illuminate\Http\Request;
@@ -14,8 +15,8 @@ class importController extends Controller
     //
     public function readExcelFile()
     {
-        //$path = 'C:\Users\B.NIMI\Desktop\DIVERS - Copie\Cotisation Cnss.xlsx';
-        //$path = 'C:\Users\HP\Downloads\ANNEXE CNSS AOUT 2024 BRUT.xlsx';
+        // ROLE : produire un fichier excel contenant des informations à envoyer à la CNSS pour une paie donnée
+        //$path = 'C:\Users\B.NIMI\Desktop\DIVERS - Copie\Cotisation Cnss.xlsx';      
         $path = public_path('Cotisation Cnss.xlsx');
         
         $privileges = (new FastExcel)->sheet(1)->import($path);
@@ -71,7 +72,7 @@ class importController extends Controller
 
     private  function decouperNom($nomBrut)
     {
-        // Nettoy_160
+        // ROLE : formatter le nom de l'employé par un format spéficique
         $nomBrut = trim($nomBrut);
         $nomBrut = preg_replace('/\s+/', ' ', $nomBrut);
 
@@ -143,11 +144,13 @@ class importController extends Controller
         ];
     }
 
-    public function getPoint_160(){
-        // Role : Recuperation point_160 dans la table D_RESULTATS_PAIE 
+    public function getPointage(){
+        // Role : Recuperation des pointages dans la table D_RESULTATS_PAIE
+        // Objectif : récuperation des jours ouvrables de l'employé pour la paie
+        // Destination : les données sont envoyées à la CNSS 
         // contraintes : IDTypePaie = '01', DateCalcul = si le calcul se fait au mois de la paie concerné on considere la date du calcul
-        // si le calcul se fait au moins prochain, on prend la pl_160 entre 25 du mois de la paie concerné et la date à laquelle le calcul se fait.
-        // si le point_160 d'un employé excede 26 jours, on remet à 26 jours. Le point_160 doit etre un entier.
+        // si le calcul se fait au moins prochain, on prend la plage entre 25 du mois de la paie concerné et la date à laquelle le calcul se fait.
+        // si le pointage d'un employé excede 26 jours, on remet à 26 jours. Le pointage doit etre un entier.
 
         $matricule = [
                'KWILU BRIQUES'
@@ -173,10 +176,62 @@ class importController extends Controller
     }
 
 
-    public function createSqlRequete() {
-        $path = 'C:\Users\B.NIMI\Desktop\DIVERS\heure_employes.xlsx';
+    public function getPointageCoupe() {
+
+    // récupération données
+        $pointages = DB::connection('hfsql_personnel')
+        ->table('D_POINTAGE_DECADAIRE')
+        ->select(
+            'Matricule',
+            'DatePointage',
+            'IDPointage',
+            'IDTache',
+            'Matricule_DateDebutDecade'
+        )
+        ->where('DatePointage', '>=', '20260620')
+        ->where('DatePointage', '<=', '20260629')
+        ->where('IDPointage', 20)
+        ->get();
+        
+        // préparation pour excel
+       
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+            // Entêtes
+            $sheet->fromArray([
+                [
+                    'Matricule',
+                    'DatePointage',
+                    'IDPointage',
+                    'IDTache',                   
+                    'Matricule_DateDebutDecade'
+                ]
+            ]);
+
+            $ligne = 2;
+
+            foreach ($pointages as $pointage) {
+                // Forcer le type Texte
+                $sheet->setCellValueExplicit("A{$ligne}", (string) $pointage->Matricule, Datatype::TYPE_STRING);               
+                $sheet->setCellValueExplicit("B{$ligne}", (string) $pointage->DatePointage, DataType::TYPE_STRING);
+                $sheet->setCellValueExplicit("C{$ligne}", (string) $pointage->IDPointage, DataType::TYPE_STRING);
+                $sheet->setCellValueExplicit("D{$ligne}", (string) $pointage->IDTache, DataType::TYPE_STRING);                 
+                $sheet->setCellValueExplicit("E{$ligne}", (string) $pointage->Matricule_DateDebutDecade, DataType::TYPE_STRING);
+
+                $ligne++;
+            }
+
+            $writer = new Xlsx($spreadsheet);
+            $writer->save(storage_path('app/PointageDecadaire.xlsx'));
+        dd('fait');
+
+    }
+
+    public function updateHS() {
+        $path = 'C:\Users\B.NIMI\Desktop\DIVERS\heure_employes_ok_UPDATE.xlsx';
        // $path = public_path('Cotisation Cnss.xlsx');        
-        $lignes = (new FastExcel)->sheet(1)->import($path);
+        $lignes = (new FastExcel)->sheet(2)->import($path);
 
         $case_160 = [];
         $case_200 = [];
@@ -219,9 +274,9 @@ class importController extends Controller
 
     public function insertHS() {
 
-        $path = 'C:\Users\B.NIMI\Desktop\DIVERS\heure_employes.xlsx';
+        $path = 'C:\Users\B.NIMI\Desktop\DIVERS\heure_employes_ok_UPDATE.xlsx';
        // $path = public_path('Cotisation Cnss.xlsx');        
-        $lignes = (new FastExcel)->sheet(4)->import($path);
+        $lignes = (new FastExcel)->sheet(1)->import($path);
 
         $case_160 = [];
         $case_200 = [];
@@ -241,15 +296,15 @@ class importController extends Controller
             $insertValues[] = "(
                 '{$matricule}',
                 '202606',
-                0,
-                0,
-                0,
-                0,
+                DEFAULT,
+                DEFAULT,
+                DEFAULT,
+                DEFAULT,
                 {$hs160},
                 {$hs200},
-                0,
+                '0',
                 '20260629',
-                '{$matriculeAnneeMois}'
+                DEFAULT
             )";
         }
 

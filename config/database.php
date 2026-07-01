@@ -122,6 +122,15 @@ return [
             //'charset' => 'utf8',
         ],
 
+        'hfsql_personnel' => [
+            'driver' => 'odbc',
+            'dsn' => 'DRIVER={HFSQL};Server Name=wnscskn02;Server Port=4900;Database=PersonnelPaie;',
+            'database' =>'PersonnelPaie' ,
+            'username' => 'Admin',
+            'password' => 'infoHFADMIN',
+            //'charset' => 'utf8',
+        ],
+
     ],
 
     /*

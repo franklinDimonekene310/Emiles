@@ -5,7 +5,7 @@
     --transition: 0.3s;
     --hauteur: 400px;
     --largeur:400px;
-    --couleur-de-fond: rgb(250,10,20);
+    --couleur-de-fond: rgba(65, 97, 201, 0.3);
 }
 
 
@@ -23,6 +23,8 @@
 
 a {
     text-decoration: none;
+    display: inline;
+    color :black
 }
 
 

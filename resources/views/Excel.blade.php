@@ -18,19 +18,18 @@
     </p>
     <button class="btn">Cliquer</button>
     <a class="btn" href="{{ route('import')}}">Cliquer</a>
-    <p>
+    
         <a class="btn" href="{{ route('pointage') }}" > Aller sur pointage</a>
-    </p>
-    <p>
-        <a class="btn" href="{{ route('createSqlRequete') }}" >Edit heure</a>
-    </p>
-    <div>
-         <a class="btn" href="{{ route('insertHS') }}" > créer heure</a>
-    </div>
+    
+    
+        <a class="btn" href="{{ route('updateHS') }}" >Update heure</a>
+    
+    
+         <a class="btn" href="{{ route('insertHS') }}" > Insert heure</a>
+         <a class="btn" href="{{ route('getPointageCoupe') }}" > Pointage coupe</a>
+    
    
 
-    <div style="width: var(--largeur); height: var(--hauteur); background-color: var(--couleur-de-fond);">
-        fgfgfgf
-    </div>
+   
 </body>
 </html>
