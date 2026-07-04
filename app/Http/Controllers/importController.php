@@ -177,8 +177,15 @@ class importController extends Controller
 
 
     public function getPointageCoupe() {
+    
+        // Role : 1. Recuperation des pointages dans la table D_POINTAGE_DECADAIRE, 2. Récupération des équipes dans la table POINTAGE_JOURNALIERS
+        // Objectif : Générer un fichier Excel pour le traitement de l'insertion dans la table POINTAGE_JOURNALIERS
+        // Destination : les données sont envoyées à la CNSS 
+        // contraintes : IDTypePaie = '01', DateCalcul = si le calcul se fait au mois de la paie concerné on considere la date du calcul
+        // si le calcul se fait au moins prochain, on prend la plage entre 25 du mois de la paie concerné et la date à laquelle le calcul se fait.
+        // si le pointage d'un employé excede 26 jours, on remet à 26 jours. Le pointage doit etre un entier.
 
-    // récupération données
+    // récupération des pointages
         $pointages = DB::connection('hfsql_personnel')
         ->table('D_POINTAGE_DECADAIRE')
         ->select(

@@ -8,6 +8,9 @@
     --couleur-de-fond: rgba(65, 97, 201, 0.3);
 }
 
+body {
+    background-color: rgba(110, 126, 177, 0.3);
+}
 
 
 .btn {

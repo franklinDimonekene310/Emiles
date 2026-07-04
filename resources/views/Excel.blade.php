@@ -27,6 +27,7 @@
     
          <a class="btn" href="{{ route('insertHS') }}" > Insert heure</a>
          <a class="btn" href="{{ route('getPointageCoupe') }}" > Pointage coupe</a>
+         <a class="btn" href="{{ route('genererFichierPointageCoupe') }}" > test Pointage coupe</a>
     
    
 

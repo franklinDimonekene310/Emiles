@@ -131,6 +131,15 @@ return [
             //'charset' => 'utf8',
         ],
 
+        'hfsql_journalier' => [
+            'driver' => 'odbc',
+            'dsn' => 'DRIVER={HFSQL};Server Name=wnscskn02;Server Port=4900;Database=JournaliersAgricoles;',
+            'database' =>'JournaliersAgricoles' ,
+            'username' => 'Admin',
+            'password' => 'infoHFADMIN',
+            //'charset' => 'utf8',
+        ],
+
     ],
 
     /*
