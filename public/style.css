@@ -14,20 +14,20 @@ body {
 
 
 .btn {
-    padding: 10px;
+    padding: 8px;
     cursor: pointer;
     border-radius: 5px;
-    font-family: 'Courier New', Courier, monospace;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    background-color: rgb(94, 94, 234);
-    font-weight: bold;
-    border:none;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    box-shadow: 0 8px 20px rgba(1, 1, 0, 0.3);
+    background-color: rgb(63, 219, 211);
+    /* font-weight: normal;     */
+    border: 1px solid white
 }
 
 a {
-    text-decoration: none;
-    display: inline;
-    color :black
+    text-decoration: none;   
+    color :rgba(22, 26, 25);
+    
 }
 
 

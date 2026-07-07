@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\importController;
 use App\Http\Controllers\PointageCoupeController;
 
+
 Route::get('/', function () {
    /* return view('Home');*/
      return view('Excel');
@@ -20,4 +21,5 @@ Route::get('/update', [importController::class, 'updateHS'])->name('updateHS');
 Route::get('/insert', [importController::class, 'insertHS'])->name('insertHS');
 Route::get('/pointage_coupe', [importController::class, 'getPointageCoupe'])->name('getPointageCoupe');
 Route::get('/test_coupe', [PointageCoupeController::class, 'genererFichierPointageCoupe'])->name('genererFichierPointageCoupe');
+
 

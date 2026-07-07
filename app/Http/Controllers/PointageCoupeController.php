@@ -16,73 +16,89 @@ class PointageCoupeController extends Controller
         // Role : 1. Recuperation des pointages dans la table D_POINTAGE_DECADAIRE, 2. Récupération des équipes dans la table POINTAGE_JOURNALIERS
         // Objectif : Générer un fichier Excel pour le traitement de l'insertion dans la table POINTAGE_JOURNALIERS
         // Destination : les données sont envoyées à la CNSS 
-        // contraintes : IDTypePaie = '01', DateCalcul = si le calcul se fait au mois de la paie concerné on considere la date du calcul
-        // si le calcul se fait au moins prochain, on prend la plage entre 25 du mois de la paie concerné et la date à laquelle le calcul se fait.
-        // si le pointage d'un employé excede 26 jours, on remet à 26 jours. Le pointage doit etre un entier.
+        // contraintes : DatePointage et IDPointage
 
-    // récupération des pointages
-       /* $pointages = DB::connection('hfsql_personnel')
+        $debutDecade = '20260620';
+        $finDecade = '20260629';
+
+    // Récupération des pointages
+        $pointages = DB::connection('hfsql_personnel')
         ->table('D_POINTAGE_DECADAIRE')
         ->select(
             'Matricule',
             'DatePointage',
             'IDPointage',
-            'IDTache',
-            'Matricule_DateDebutDecade'
+            'IDTache'            
         )
-        ->where('DatePointage', '>=', '20260620')
-        ->where('DatePointage', '<=', '20260629')
-        ->where('IDPointage', 20)
-        ->get();*/
+        ->where('DatePointage', '>=', $debutDecade)
+        ->where('DatePointage', '<=', $finDecade)
+        ->where('IDPointage', 20)       
+        ->get();
         
-
+       
         // Récupération des équipes
         $equipes = DB::connection('hfsql_journalier')
         ->table('POINTAGE_JOURNALIERS')
         ->select(
+            'Matricule',
             'DatePointage',
-            'IDEquipeJ',
-            'Matricule'
+            'IDEquipeJ'            
         )
         ->where('Matricule', 'NOT LIKE', 'JJ%')
-        ->where('DatePointage', '>=', '20260620')
-        ->where('DatePointage', '<=', '20260629')  
-        ->where('Matricule', '=', '140604')     
+        ->where('DatePointage', '>=', $debutDecade)
+        ->where('DatePointage', '<=', $finDecade)                     
         ->get();
 
-        dd($equipes);
-        // préparation pour excel
        
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+        // Régrouper collections equipes par Matricule et par date
+        // $equipesParMatricule = $equipes->groupBy('Matricule');   Regrouper seulement par matricule
+        $matriculeDateEquipes = [];
+        foreach ($equipes as $equipe) {
+            $matriculeDateEquipes[$equipe->Matricule][$equipe->DatePointage] = $equipe->IDEquipeJ;
+        }
 
-            // Entêtes
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet()->setTitle('Pointages Coupe');
+
+            // Entêtes Fichier Excel
             $sheet->fromArray([
                 [
+                    'IDEquipeJ',
                     'Matricule',
                     'DatePointage',
                     'IDPointage',
-                    'IDTache',                   
-                    'Matricule_DateDebutDecade'
+                    'IDTache'                     
                 ]
             ]);
 
-            $ligne = 2;
+       // Récupération des codeEquipe dans la collections Equipes et preparation Fichier Excel
+        $ligne = 2;
+        foreach ($pointages as $pointage) {
 
-            foreach ($pointages as $pointage) {
-                // Forcer le type Texte
-                $sheet->setCellValueExplicit("A{$ligne}", (string) $pointage->Matricule, Datatype::TYPE_STRING);               
-                $sheet->setCellValueExplicit("B{$ligne}", (string) $pointage->DatePointage, DataType::TYPE_STRING);
-                $sheet->setCellValueExplicit("C{$ligne}", (string) $pointage->IDPointage, DataType::TYPE_STRING);
-                $sheet->setCellValueExplicit("D{$ligne}", (string) $pointage->IDTache, DataType::TYPE_STRING);                 
-                $sheet->setCellValueExplicit("E{$ligne}", (string) $pointage->Matricule_DateDebutDecade, DataType::TYPE_STRING);
+            $idEquipe = $matriculeDateEquipes[$pointage->Matricule][$pointage->DatePointage] ?? null;
+
+            if ($idEquipe !== null) {
+                // traitement
+                 // Forcer le type Texte
+                $sheet->setCellValueExplicit("A{$ligne}", (string) $idEquipe, DataType::TYPE_STRING);
+                $sheet->setCellValueExplicit("B{$ligne}", (string) $pointage->Matricule, Datatype::TYPE_STRING);               
+                $sheet->setCellValueExplicit("C{$ligne}", (string) $pointage->DatePointage, DataType::TYPE_STRING);
+                $sheet->setCellValueExplicit("D{$ligne}", (string) $pointage->IDPointage, DataType::TYPE_STRING);
+                $sheet->setCellValueExplicit("E{$ligne}", (string) $pointage->IDTache, DataType::TYPE_STRING);                 
 
                 $ligne++;
             }
+        }
+        
+        $spreadsheet->getDefaultStyle()
+        ->getFont()
+        ->setName('Arial')
+        ->setSize(10);
 
-            $writer = new Xlsx($spreadsheet);
-            $writer->save(storage_path('app/PointageDecadaire.xlsx'));
-        dd('fait');
+        $writer = new Xlsx($spreadsheet);
+        $writer->save(storage_path('app/PointageDecadaire.xlsx'));      
+       
+        dd('Fichier généré avec succès');
     }
 
     public function copiePointageCoupe() {
