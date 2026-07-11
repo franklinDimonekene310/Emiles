@@ -35,6 +35,7 @@ class importController extends Controller
                 'Prenom' =>  $nomBrut['prenom'],
                 'Type travailleur(1=Travailleur , 2=Assimile)' => '',
                 'Commune  ou Territoire affectation' => (trim($privilege['LIBELLE SITE']) === 'KWILU-NGONGO') ? "MBANZA-NGUNGU" : "GOMBE",
+                'Période Cotisee (jj/mm/aaaa)' => '',
                 'Montant Cotise' => $privilege['COTISATION INSS'],
                 'Nbre De Jours de travail' => '26',
                 'Nbre De heure de travail' => '',
