@@ -23,7 +23,7 @@ class PointageCoupeController extends Controller
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet()->setTitle('Pointages Coupe');
 
-         $spreadsheet->getDefaultStyle()
+        $spreadsheet->getDefaultStyle()
         ->getFont()
         ->setName('Arial')
         ->setSize(10);
@@ -60,14 +60,33 @@ class PointageCoupeController extends Controller
         dd('Fichier généré avec succès');
     }
 
-    public function misAJourPointageCoupe() {
+    public function misAJourPointageCoupe(Request $request) {
         // Role : 1 A partir du fichier Excel, actualiser les pointages dans la table POINTAGE_JOURNALIERS
         // Objectif : Mis à jour des colonnes POINTAGE_JOURNALIERS.IDTacheJ et  POINTAGE_JOURNALIERS.TacheRealisee de la table POINTAGE_JOURNALIERS         
         // Contraintes : EquipeJ, Matricule, DatePointage
+
+         $fichierDeBase = $this->genererTableauDeBase($request);
+        
+
+         foreach ($fichierDeBase as $pointage) {          
+
+                DB::connection('hfsql_journalier')
+                ->table('POINTAGE_JOURNALIERS')       
+                ->where('IDEquipeJ', $pointage['IDEquipeJ'])       
+                ->where('Matricule', $pointage['Matricule'])
+                ->where('DatePointage', $pointage['DatePointage'])                            
+                ->update(['IDTacheJ'=> intval($pointage['IDPointage']), 'TacheRealisee' => $pointage['IDTacheJ']]);
+          
+        }
+        
+
+        dd('succès');
+
     }
 
     private function genererTableauDeBase(Request $request) {        
-       
+       // Role : générer un tableau ('IDEquipeJ', 'Matricule', 'DatePointage', 'IDPointage', 'IDTacheJ') à partir du pointage coupe
+       // tables concernées : D_POINTAGE_DECADAIRE ET POINTAGE_JOURNALIER
         $dateDebutDecade = Carbon::parse($request->debutDecade); $dateFinDecade = Carbon::parse($request->finDecade);
         
         if (!$dateFinDecade->gte($dateDebutDecade)) {
@@ -86,10 +105,13 @@ class PointageCoupeController extends Controller
             'IDPointage',
             'IDTache'            
         )
+        ->where('Matricule', '140640')
         ->where('DatePointage', '>=', $dateDebutDecade)
         ->where('DatePointage', '<=', $dateFinDecade)
         ->where('IDPointage', 20)       
         ->get();
+
+       
 
         // Récupération des équipes
         $equipes = DB::connection('hfsql_journalier')

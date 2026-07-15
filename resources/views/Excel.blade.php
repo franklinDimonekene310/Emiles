@@ -25,16 +25,15 @@
         <a class="btn" href="{{ route('updateHS') }}" >Update heure</a>
     
     
-         <a class="btn" href="{{ route('insertHS') }}" > Insert heure</a>
-         <a class="btn" href="{{ route('getPointageCoupe') }}" > Pointage coupe</a>
-         <a class="btn" href="{{ route('genererFichierPointageCoupe') }}" > test Pointage coupe</a>   
-
-        
+        <a class="btn" href="{{ route('insertHS') }}" > Insert heure</a>
+        <a class="btn" href="{{ route('getPointageCoupe') }}" > Pointage coupe</a>
+        <a class="btn" href="{{ route('genererFichierPointageCoupe') }}" > test Pointage coupe</a>          
         <a class="btn" onclick="document.getElementById('id01').style.display='flex'">Open Modal</a>
+        <a class="btn" href="{{ route('misAJourPointageCoupe') }}">Test</a>
 
         <div id="id01" class="modal">
         
-        <form class="modal-content" action="{{ route('genererFichierPointageCoupe') }}" >
+        <form class="modal-content" action="{{ route('misAJourPointageCoupe') }}" >
             @csrf
             <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Fermer">&times;</span>
             <div class="container">
