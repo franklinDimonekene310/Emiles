@@ -32,35 +32,38 @@
         <a class="btn" href="{{ route('misAJourPointageCoupe') }}">Test</a>
 
         <div id="id01" class="modal">
-        
-        <form class="modal-content" action="{{ route('misAJourPointageCoupe') }}" >
-            @csrf
-            <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Fermer">&times;</span>
-            <div class="container">
-                <h2>Pointage Décadaire</h2>
+                <form class="modal-content" action="{{ route('misAJourPointageCoupe') }}" >
+                    @csrf
+                    <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Fermer">&times;</span>
+                    <div class="container">
+                        <h2>Pointage Décadaire</h2>
 
-                <div>
-                    <label for="fname">Début décade du </label>
-                    <input type="date" id="fname" name="debutDecade">
-                    <label for="lname">au</label>                
-                    <input type="date" id="lname" name="finDecade" value="{{ old('finDecade') }}">
-                </div>
-                <p>
-                    @error('finDecade')
-                        <div class="text-danger">
-                            {{ $message }}
+                        <div>
+                            <label for="fname">Début décade du </label>
+                            <input type="date" id="fname" name="debutDecade">
+                            <label for="lname">au</label>                
+                            <input type="date" id="lname" name="finDecade" value="{{ old('finDecade') }}">
                         </div>
-                    @enderror
-                </p>
+                        <p>
+                            @error('finDecade')
+                                <div class="text-danger">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </p>
 
-                <div class="clearfix">
-                    <button type="button" class="cancelbtn">Annuler</button>
-                    <button type="submit" class="deletebtn">Valider</button>
-                </div>
-            </div>
-        </form>
+                        <div class="clearfix">
+                            <button type="button" class="cancelbtn">Annuler</button>
+                            <button type="submit" class="deletebtn">Valider</button>
+                        </div>
+                    </div>
+                </form>
         </div>
-          
+          <br><br><br>
+        <div class="alert alert-success">
+            <strong>Success!</strong> Your operation was completed successfully.
+            <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+        </div
    
    <script src="{{ asset('script.js') }}"></script>
    <script>

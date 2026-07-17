@@ -8,6 +8,7 @@ use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use DB;
 use Carbon\Carbon;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 
 class PointageCoupeController extends Controller
@@ -64,7 +65,7 @@ class PointageCoupeController extends Controller
         // Role : 1 A partir du fichier Excel, actualiser les pointages dans la table POINTAGE_JOURNALIERS
         // Objectif : Mis à jour des colonnes POINTAGE_JOURNALIERS.IDTacheJ et  POINTAGE_JOURNALIERS.TacheRealisee de la table POINTAGE_JOURNALIERS         
         // Contraintes : EquipeJ, Matricule, DatePointage
-
+/*
          $fichierDeBase = $this->genererTableauDeBase($request);
         
 
@@ -78,9 +79,56 @@ class PointageCoupeController extends Controller
                 ->update(['IDTacheJ'=> intval($pointage['IDPointage']), 'TacheRealisee' => $pointage['IDTacheJ']]);
           
         }
-        
 
-        dd('succès');
+        dd('succès ff');*/
+
+        //$fichierDeBase = $this->genererTableauDeBase($request);
+
+        $connexion = DB::connection('hfsql_journalier');
+
+        $connexion->beginTransaction();
+
+        try {
+
+            foreach ($fichierDeBase as $pointage) {
+
+                $nbLignes = $connexion
+                    ->table('POINTAGE_JOURNALIERS')
+                    ->where('IDEquipeJ', $pointage['IDEquipeJ'])
+                    ->where('Matricule', $pointage['Matricule'])
+                    ->where('DatePointage', $pointage['DatePointage'])
+                    ->update([
+                        'IDTacheJ65'      => (int) $pointage['IDPointage'],
+                        'TacheRealisee65' => $pointage['IDTacheJ'],
+                    ]);
+
+                // Facultatif : vérifier qu'une ligne a bien été mise à jour
+                if ($nbLignes === 0) {
+                    throw new \Exception(
+                        "Aucune ligne trouvée pour le matricule {$pointage['Matricule']} à la date {$pointage['DatePointage']}."
+                    );
+                }
+            }
+
+            $connexion->commit();
+
+            return redirect()->back()->with('success', 'Mise à jour effectuée avec succès.');
+
+        } catch (\Throwable $e) {
+
+            $connexion->rollBack();
+
+            // Enregistrer l'erreur dans les logs
+            Log::error('Erreur lors de la mise à jour des pointages', [
+                'message' => $e->getMessage(),
+                'ligne'   => $e->getLine(),
+                'fichier' => $e->getFile(),
+            ]);
+
+            return redirect()->back()->withErrors([
+                'erreur' => "Une erreur est survenue : {$e->getMessage()}"
+            ]);
+        }
 
     }
 
