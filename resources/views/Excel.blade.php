@@ -16,7 +16,9 @@
         Ad mollitia rerum exercitationem officiis consectetur necessitatibus eligendi voluptatum, minus neque quam debitis? Illum eos dolore quo cum beatae aspernatur quaerat non porro, perferendis, sed quos obcaecati laboriosam exercitationem molestiae!
         Cum ipsa consectetur cumque itaque commodi harum architecto facere quisquam asperiores, molestias, mollitia quia non, temporibus corporis! Accusamus modi possimus ab itaque quis minima obcaecati ullam, reiciendis error harum debitis.
     </p>
-    {{-- <button class="btn">Cliquer</button> --}}
+    @if(session('erreur'))
+        @dump(session('erreur'))
+    @endif
     <a class="btn" href="{{ route('import')}}">Cliquer</a>
     
         <a class="btn" href="{{ route('pointage') }}" > Aller sur pointage</a>
@@ -60,6 +62,7 @@
                 </form>
         </div>
           <br><br><br>
+          
         <div class="alert alert-success">
             <strong>Success!</strong> Your operation was completed successfully.
             <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
