@@ -7,8 +7,9 @@ use App\Http\Controllers\PointageCoupeController;
 
 Route::get('/', function () {
    /* return view('Home');*/
-     return view('Excel');
+    return view('Excel');
      // return view('Home2');
+      //return view('Modale');
 });
 
 Route::get('/excel', function () {

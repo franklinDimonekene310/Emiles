@@ -20,7 +20,7 @@ class PointageCoupeController extends Controller
         // contraintes : DatePointage et IDPointage        
         
         $fichierDeBase = $this->genererTableauDeBase($request);       
-        
+       
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet()->setTitle('Pointages Coupe');
 
@@ -56,9 +56,9 @@ class PointageCoupeController extends Controller
         }
       
         $writer = new Xlsx($spreadsheet);
-        $writer->save(storage_path('app/PointageDecadaire.xlsx'));      
-       
-        dd('Fichier généré avec succès');
+        $writer->save(storage_path('app/PointageDecadaire.xlsx')); 
+      
+        return redirect()->back()->with('success', 'Fichier Excel généré avec succès.');
     }
 
     public function misAJourPointageCoupe(Request $request) {
@@ -125,9 +125,15 @@ class PointageCoupeController extends Controller
                 'fichier' => $e->getFile(),
             ]);
 
+            /*
             return redirect()->back()->withErrors([
                 'erreur' => "Une erreur est survenue : {$e->getMessage()}"
-            ]);
+            ]);*/
+
+            return redirect()->back()->with(
+                'erreur',
+                "Une erreur est survenue : {$e->getMessage()}"
+            );
         }
 
     }
@@ -135,12 +141,24 @@ class PointageCoupeController extends Controller
     private function genererTableauDeBase(Request $request) {        
        // Role : générer un tableau ('IDEquipeJ', 'Matricule', 'DatePointage', 'IDPointage', 'IDTacheJ') à partir du pointage coupe
        // tables concernées : D_POINTAGE_DECADAIRE ET POINTAGE_JOURNALIER
+          $request->validate(
+                [
+                    'debutDecade' => ['required', 'date'],
+                    'finDecade'   => ['required', 'date', 'after_or_equal:debutDecade'],
+                ],
+                [
+                    'debutDecade.required' => 'Veuillez renseigner la date de début.',
+                    'debutDecade.date' => 'La date de début est invalide.',
+
+                    'finDecade.required' => 'Veuillez renseigner la date de fin.',
+                    'finDecade.date' => 'La date de fin est invalide.',
+                    'finDecade.after_or_equal' => 'La date de fin doit être supérieure ou égale à la date de début.',
+                ]
+            );
+      
         $dateDebutDecade = Carbon::parse($request->debutDecade); $dateFinDecade = Carbon::parse($request->finDecade);
-        
-        if (!$dateFinDecade->gte($dateDebutDecade)) {
-            return back()->withErrors([ 'finDecade'=> 'La date de fin doit être supérieure ou égale à la date du début.']);
-        }
        
+              
         $dateDebutDecade  = $dateDebutDecade->format('Ymd') ;
         $dateFinDecade  = $dateFinDecade->format('Ymd') ;
 
@@ -152,8 +170,7 @@ class PointageCoupeController extends Controller
             'DatePointage',
             'IDPointage',
             'IDTache'            
-        )
-        ->where('Matricule', '140640')
+        )        
         ->where('DatePointage', '>=', $dateDebutDecade)
         ->where('DatePointage', '<=', $dateFinDecade)
         ->where('IDPointage', 20)       

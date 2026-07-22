@@ -41,6 +41,20 @@
     
     <div class="enfant" style="width:80px; height: 50px; background-color: grey; border: 1px solid black">enfant</div>
 </div>
+
+<p>
+    <h1>Demo Modal</h1>
+</p>
+    <button id="open">Ouvrir le modal</button>
+    
+    <div id="modal">
+        <div class="modale-content">
+            <h1>Bonjour le monde !</h1>
+            <button id="close">Fermer</button>
+        </div>
+    </div>
+
+
     <script src="{{ asset('script.js')}}"></script>
 </body>
 </html>
