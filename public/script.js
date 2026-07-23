@@ -35,7 +35,7 @@
             });
         }
 
-        document.querySelector('#btnToogle').addEventListener('click', function () {
+        /* document.querySelector('#btnToogle').addEventListener('click', function () {
             let elt = document.querySelector('#demo');
 
             if (elt.style.display === 'none') {
@@ -44,9 +44,32 @@
                 {
                     elt.style.display = 'none'
                 }
-        })
+        }) */
 
+                const toast = document.getElementById("success-toast");
 
+                if (toast) {
+                    // Afficher le toast
+                    setTimeout(() => {
+                        toast.classList.add("show");
+                    }, 100);
+
+                    // Le masquer après 4 secondes
+                    setTimeout(() => {
+                        closeToast();
+                    }, 4000);
+                }
+
+                function closeToast() {
+                    const toast = document.getElementById("success-toast");
+                    if (toast) {
+                        toast.classList.remove("show");
+                        // Supprimer complètement le toast après l'animation
+                        setTimeout(() => {
+                            toast.remove();
+                        }, 500);
+                    }
+                }
         
     });
 

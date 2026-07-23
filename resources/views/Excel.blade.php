@@ -72,12 +72,18 @@
         <br><br><br>         
         
 
-        {{-- @if (session('success')) --}}
+        {{-- @if (session('success')) 
             <div class="alert-success" id="success-message">
-                <strong>Success!</strong> {{ session('success') }}
-                <button type="button" class="close-btn" onclick="this.parentElement.style.display='none';">&#215;</button>
+                <strong>Success!</strong> {{ session('success') }}                
+                <a href="#" class="close-btn" onclick="this.parentElement.style.display='none';">&#215;</a>
             </div>
-        {{-- @endif --}}
+         @endif --}}
+
+         <div class="toast" id="success-toast">
+                <strong>Success !</strong> {{ session('success') }}                
+                <a href="#" class="close-btn" onclick="closeToast()">&#215;</a>
+                <div class="toast-progress"></div>
+            </div>
    
    <script src="{{ asset('script.js') }}"></script>
    <script>
@@ -85,7 +91,7 @@
             @if ($errors->any())
                 document.getElementById('id01').style.display = 'flex';
             @endif
-
+         
         });
     </script>
 
