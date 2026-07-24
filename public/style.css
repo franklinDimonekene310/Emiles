@@ -67,7 +67,7 @@ button:hover {
 
 /* Add a color to the delete button */
 .deletebtn {
-  background-color: #f44336;
+  background-color: #3434c6;
 }
 
 /* Add padding and center-align text to the container */
@@ -206,7 +206,7 @@ hr {
 }
 
 
-/* Toast */
+/* Gestion du Toast */
 .toast {
     position: fixed;
     top: 20px;

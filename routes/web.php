@@ -6,8 +6,8 @@ use App\Http\Controllers\PointageCoupeController;
 
 
 Route::get('/', function () {
-   /* return view('Home');*/
-    return view('Excel');
+ //return view('toast');
+   return view('Excel');
      // return view('Home2');
       //return view('Modale');
 });
@@ -22,7 +22,7 @@ Route::get('/pointage', [importController::class, 'getPointage'])->name('pointag
 Route::get('/update', [importController::class, 'updateHS'])->name('updateHS');
 Route::get('/insert', [importController::class, 'insertHS'])->name('insertHS');
 Route::get('/pointage_coupe', [importController::class, 'getPointageCoupe'])->name('getPointageCoupe');
-Route::get('/test_coupe', [PointageCoupeController::class, 'genererFichierPointageCoupe'])->name('genererFichierPointageCoupe');
-Route::get('/test_coupe2', [PointageCoupeController::class, 'misAJourPointageCoupe'])->name('misAJourPointageCoupe');
+Route::get('/exportation_pointage_en_excel', [PointageCoupeController::class, 'genererFichierPointageCoupe'])->name('genererFichierPointageCoupe');
+Route::get('/mis_a_jour_pointage', [PointageCoupeController::class, 'misAJourPointageCoupe'])->name('misAJourPointageCoupe');
 
 

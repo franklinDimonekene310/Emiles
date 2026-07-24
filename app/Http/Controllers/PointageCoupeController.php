@@ -18,7 +18,7 @@ class PointageCoupeController extends Controller
         // Role : 1. Recuperation des pointages dans la table D_POINTAGE_DECADAIRE, 2. Récupération des équipes dans la table POINTAGE_JOURNALIERS
         // Objectif : Générer un fichier Excel pour le traitement de l'insertion dans la table POINTAGE_JOURNALIERS       
         // contraintes : DatePointage et IDPointage        
-        
+       
         $fichierDeBase = $this->genererTableauDeBase($request);       
        
         $spreadsheet = new Spreadsheet();
@@ -65,8 +65,8 @@ class PointageCoupeController extends Controller
         // Role : 1 A partir du fichier Excel, actualiser les pointages dans la table POINTAGE_JOURNALIERS
         // Objectif : Mis à jour des colonnes POINTAGE_JOURNALIERS.IDTacheJ et  POINTAGE_JOURNALIERS.TacheRealisee de la table POINTAGE_JOURNALIERS         
         // Contraintes : EquipeJ, Matricule, DatePointage
-/*
-         $fichierDeBase = $this->genererTableauDeBase($request);
+       /*
+        $fichierDeBase = $this->genererTableauDeBase($request);
         
 
          foreach ($fichierDeBase as $pointage) {          
@@ -79,11 +79,8 @@ class PointageCoupeController extends Controller
                 ->update(['IDTacheJ'=> intval($pointage['IDPointage']), 'TacheRealisee' => $pointage['IDTacheJ']]);
           
         }
-
-        dd('succès ff');*/
-
-        //$fichierDeBase = $this->genererTableauDeBase($request);
-
+   */
+       
         $connexion = DB::connection('hfsql_journalier');
 
         $connexion->beginTransaction();
@@ -125,11 +122,7 @@ class PointageCoupeController extends Controller
                 'fichier' => $e->getFile(),
             ]);
 
-            /*
-            return redirect()->back()->withErrors([
-                'erreur' => "Une erreur est survenue : {$e->getMessage()}"
-            ]);*/
-
+            
             return redirect()->back()->with(
                 'erreur',
                 "Une erreur est survenue : {$e->getMessage()}"

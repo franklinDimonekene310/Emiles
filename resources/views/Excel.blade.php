@@ -9,13 +9,7 @@
 <body>
     <h1>Importation du Fichier Excel</h1>
     
-    
-        @if (session('erreur'))
-            <div class="alert alert-danger">
-                {{ session('erreur') }}
-            </div>
-        @endif
-        
+       
     <a class="btn" href="{{ route('import')}}">Cliquer</a>
     
         <a class="btn" href="{{ route('pointage') }}" > Aller sur pointage</a>
@@ -25,14 +19,14 @@
     
     
         <a class="btn" href="{{ route('insertHS') }}" > Insert heure</a>
-        <a class="btn" href="{{ route('getPointageCoupe') }}" > Pointage coupe</a>
-        <a class="btn" href="{{ route('genererFichierPointageCoupe') }}" >Exporter Pointage coupe en Excel</a>          
-        <a class="btn" onclick="document.getElementById('id01').style.display='flex'">Open Modal</a>
+        <a class="btn" href="{{ route('getPointageCoupe') }}" > Pointage coupe</a>                
+      
+        <a class="btn" onclick="ouvrirModal('{{ route('genererFichierPointageCoupe') }}')">Exportation Pointage coupe</a>
+        <a class="btn" onclick="ouvrirModal('{{ route('misAJourPointageCoupe') }}')">Mis à jour</a>
         <a class="btn" href="{{ route('misAJourPointageCoupe') }}">Test</a>
 
-        <div id="id01" class="modal">
-                {{-- <form class="modal-content" action="{{ route('misAJourPointageCoupe') }}" > --}}
-                <form id="monFormExcel" class="modal-content" action="{{route('genererFichierPointageCoupe') }}">
+        <div id="id01" class="modal">                
+                <form class="modal-content" id ="pointageForm" method="GET" >
                     @csrf
                     <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Fermer">&times;</span>
                     <div class="container">
@@ -40,13 +34,12 @@
 
                         <div>
                             <label for="debutDecade">Début décade du </label>
-                            <input type="date" id="debutDecade" name="debutDecade">
-                            <span id="erreurDebut" class="text-danger"></span>
+                            <input type="date" id="debutDecade" name="debutDecade" value="{{ old('debutDecade') }}">
 
 
                             <label for="finDecade">au</label>                
                             <input type="date" id="finDecade" name="finDecade" value="{{ old('finDecade') }}">
-                            <span id="erreurFin" class="text-danger"></span>
+                          
                         </div>
                         <p>
                             @error('finDecade')
@@ -59,6 +52,12 @@
                                     {{ $message }}
                                 </div>
                             @enderror
+
+                            @if (session('erreur'))
+                                <div class="alert text-danger" id="erreur">
+                                    {{ session('erreur') }}
+                                </div>
+                            @endif
                         </p>
 
                         <div class="clearfix">
@@ -69,31 +68,30 @@
                 </form>
         </div>
 
-        <br><br><br>         
         
-
-        {{-- @if (session('success')) 
-            <div class="alert-success" id="success-message">
-                <strong>Success!</strong> {{ session('success') }}                
-                <a href="#" class="close-btn" onclick="this.parentElement.style.display='none';">&#215;</a>
-            </div>
-         @endif --}}
-
-         <div class="toast" id="success-toast">
-                <strong>Success !</strong> {{ session('success') }}                
+        @if(session('success'))
+           <div class="toast" id="success-toast">
+                <strong>Success ! </strong> {{ session('success') }}  
                 <a href="#" class="close-btn" onclick="closeToast()">&#215;</a>
                 <div class="toast-progress"></div>
             </div>
+        @endif
+        
    
-   <script src="{{ asset('script.js') }}"></script>
-   <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            @if ($errors->any())
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                @if ($errors->any())
                 document.getElementById('id01').style.display = 'flex';
-            @endif
-         
-        });
-    </script>
+                @endif  
+                
+                @if (session('erreur'))
+                document.getElementById('id01').style.display = 'flex';                
+                @endif 
+                
+                window.message = @json(session('success'));                
+            });        
+        </script>
+        <script src="{{ asset('script.js') }}"></script>
 
 </body>
 </html>
