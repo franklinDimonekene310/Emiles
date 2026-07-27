@@ -47,6 +47,7 @@
                                     {{ $message }}
                                 </div>
                             @enderror
+
                             @error('debutDecade')
                                 <div class="text-danger">
                                     {{ $message }}
@@ -62,7 +63,7 @@
 
                         <div class="clearfix">
                             <button type="button" class="cancelbtn">Annuler</button>
-                            <button type="submit" class="deletebtn">Valider</button>
+                            <button type="submit" class="validatebtn">Valider</button>
                         </div>
                     </div>
                 </form>
@@ -81,11 +82,11 @@
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 @if ($errors->any())
-                document.getElementById('id01').style.display = 'flex';
+                    document.getElementById('id01').style.display = 'flex';
                 @endif  
                 
                 @if (session('erreur'))
-                document.getElementById('id01').style.display = 'flex';                
+                    document.getElementById('id01').style.display = 'flex';                
                 @endif 
                 
                 window.message = @json(session('success'));                

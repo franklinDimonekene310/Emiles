@@ -237,6 +237,9 @@ class importController extends Controller
     }
 
     public function updateHS() {
+        /* Préparer une requete Sql pour la mis à jour des heures supplémentaire
+           Les heures supplémentaires sont puisées dans un fichier Excel
+        */
         $path = 'C:\Users\B.NIMI\Desktop\DIVERS\heure_employes_ok_UPDATE.xlsx';
        // $path = public_path('Cotisation Cnss.xlsx');        
         $lignes = (new FastExcel)->sheet(2)->import($path);

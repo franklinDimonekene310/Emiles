@@ -65,10 +65,10 @@ class PointageCoupeController extends Controller
         // Role : 1 A partir du fichier Excel, actualiser les pointages dans la table POINTAGE_JOURNALIERS
         // Objectif : Mis à jour des colonnes POINTAGE_JOURNALIERS.IDTacheJ et  POINTAGE_JOURNALIERS.TacheRealisee de la table POINTAGE_JOURNALIERS         
         // Contraintes : EquipeJ, Matricule, DatePointage
-       /*
+      
         $fichierDeBase = $this->genererTableauDeBase($request);
         
-
+ /*
          foreach ($fichierDeBase as $pointage) {          
 
                 DB::connection('hfsql_journalier')
@@ -125,7 +125,7 @@ class PointageCoupeController extends Controller
             
             return redirect()->back()->with(
                 'erreur',
-                "Une erreur est survenue : {$e->getMessage()}"
+                "Une erreur est survenue. La mis à jour n'a été effectuée."
             );
         }
 

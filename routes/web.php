@@ -25,4 +25,9 @@ Route::get('/pointage_coupe', [importController::class, 'getPointageCoupe'])->na
 Route::get('/exportation_pointage_en_excel', [PointageCoupeController::class, 'genererFichierPointageCoupe'])->name('genererFichierPointageCoupe');
 Route::get('/mis_a_jour_pointage', [PointageCoupeController::class, 'misAJourPointageCoupe'])->name('misAJourPointageCoupe');
 
+Route::post('/clear-erreur-session', function () {
+    session()->forget('erreur');
+    return response()->json(['success' => true]);
+})->name('clear.erreur');
+
 

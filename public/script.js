@@ -23,6 +23,12 @@
         document.getElementById('id01').style.display = 'flex';
     }
 
+    // Fermeture Modal
+    function fermerModal() {
+        document.getElementById('id01').style.display='none';        
+    }
+
+
     document.addEventListener('DOMContentLoaded', function () {
 
         var modal = document.getElementById('id01');
