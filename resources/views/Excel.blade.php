@@ -21,14 +21,15 @@
         <a class="btn" href="{{ route('insertHS') }}" > Insert heure</a>
         <a class="btn" href="{{ route('getPointageCoupe') }}" > Pointage coupe</a>                
       
-        <a class="btn" onclick="ouvrirModal('{{ route('genererFichierPointageCoupe') }}')">Exportation Pointage coupe</a>
-        <a class="btn" onclick="ouvrirModal('{{ route('misAJourPointageCoupe') }}')">Mis à jour</a>
+        <a class="btn" id="pointage_excel" onclick="ouvrirModal('{{ route('genererFichierPointageCoupe') }}')">Exportation Pointage coupe</a>
+        <a class="btn" id="mis_a_jr" onclick="ouvrirModal('{{ route('misAJourPointageCoupe') }}')">Mis à jour</a>
         <a class="btn" href="{{ route('misAJourPointageCoupe') }}">Test</a>
+        <a href="{{ route('pointageManquant')}}">Pointage manqquant</a>
 
         <div id="id01" class="modal">                
                 <form class="modal-content" id ="pointageForm" method="GET" >
                     @csrf
-                    <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Fermer">&times;</span>
+                    <span onclick="fermerModal()" class="close" title="Fermer">&times;</span>
                     <div class="container">
                         <h2>Pointage Décadaire</h2>
 

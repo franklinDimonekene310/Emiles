@@ -7,6 +7,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use DB;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
@@ -14,6 +15,50 @@ use Illuminate\Http\Request;
 class PointageCoupeController extends Controller
 {
     //
+    public function pointageManquant() {
+        $debut = '2026-07-21';
+        $fin   = '2026-07-31';
+
+        $datePointageManquant = [];
+
+        foreach (CarbonPeriod::create($debut, $fin) as $jour) {
+
+            $date = $jour->format('Ymd');
+
+            $employes = DB::connection('hfsql_personnel')
+                ->table('EMPLOYES')
+                ->select(
+                    'Matricule',
+                    'NomEmploye',
+                    'IDDirection',
+                    'IDGrade'
+                )
+                ->where('IDGrade','>','15')
+                ->where('IDFinActivite', '0')
+                ->where('DateEngagement', '<=', $date)
+                ->whereNotIn('Matricule', function ($query) use ($date) {
+                    $query->from('D_POINTAGE_DECADAIRE')
+                        ->select('Matricule')
+                        ->where('DatePointage', $date);
+                })
+                ->whereNotIn('Matricule', [
+                    '114396',
+                    '131627',
+                    '113148',
+                    ' 87853',
+                    ' 86841',
+                    '137731',
+                    '131669',
+                ])
+                ->get();
+
+            $datePointageManquant[$date] = $employes->groupBy('IDDirection')->toArray();
+        }     
+
+        
+           dd($datePointageManquant);
+    }
+
     public function genererFichierPointageCoupe(Request $request) {
         // Role : 1. Recuperation des pointages dans la table D_POINTAGE_DECADAIRE, 2. Récupération des équipes dans la table POINTAGE_JOURNALIERS
         // Objectif : Générer un fichier Excel pour le traitement de l'insertion dans la table POINTAGE_JOURNALIERS       

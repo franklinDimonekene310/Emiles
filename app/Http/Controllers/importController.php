@@ -244,6 +244,7 @@ class importController extends Controller
        // $path = public_path('Cotisation Cnss.xlsx');        
         $lignes = (new FastExcel)->sheet(2)->import($path);
 
+        $case_130 = [];
         $case_160 = [];
         $case_200 = [];
         $matricules = [];
@@ -254,9 +255,11 @@ class importController extends Controller
             // $matricule = $ligne['matricule'];
             $matricule = str_pad($ligne['matricule'], 6, ' ', STR_PAD_LEFT);
 
+            $_130 = (int) $ligne['_130'];
             $_160 = (int) $ligne['_160'];
             $_200 = (int) $ligne['_200'];
 
+            $case_130[] = "WHEN '{$matricule}' THEN {$_130}";
             $case_160[] = "WHEN '{$matricule}' THEN {$_160}";
             $case_200[] = "WHEN '{$matricule}' THEN {$_200}";
 
@@ -266,6 +269,11 @@ class importController extends Controller
         $sql = "
             UPDATE HS_MENSUEL
             SET
+                NbreHS130 = NbreHS130 + CASE Matricule
+                    " . implode("\n        ", $case_130) . "
+                    ELSE 0
+                END,
+
                 NbreHS160 = NbreHS160 + CASE Matricule
                     " . implode("\n        ", $case_160) . "
                     ELSE 0
@@ -277,8 +285,8 @@ class importController extends Controller
                 END
 
             WHERE Matricule IN (" . implode(',', $matricules) . ")
-            AND AnneeMoisHS = '202606'
-            AND DateCreationHS = '20260629';
+            AND AnneeMoisHS = '202607'
+            AND DateCreationHS = '20260729';
             ";
         dd($sql);
     }
@@ -289,6 +297,7 @@ class importController extends Controller
        // $path = public_path('Cotisation Cnss.xlsx');        
         $lignes = (new FastExcel)->sheet(1)->import($path);
 
+        $case_130 = [];
         $case_160 = [];
         $case_200 = [];
         $matricules = [];
@@ -299,22 +308,23 @@ class importController extends Controller
 
             $matricule = str_pad($ligne['matricule'], 6, ' ', STR_PAD_LEFT);
 
+            $hs130 = (float) $ligne['_130'];
             $hs160 = (float) $ligne['_160'];
             $hs200 = (float) $ligne['_200'];
 
-            $matriculeAnneeMois = $matricule . ',202606';
+            // $matriculeAnneeMois = $matricule . ',202607';
 
             $insertValues[] = "(
                 '{$matricule}',
-                '202606',
+                '202607',
                 DEFAULT,
                 DEFAULT,
                 DEFAULT,
-                DEFAULT,
+                {$hs130},
                 {$hs160},
                 {$hs200},
                 '0',
-                '20260629',
+                '20260729',
                 DEFAULT
             )";
         }
