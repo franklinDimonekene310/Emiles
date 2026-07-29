@@ -16,10 +16,15 @@
     }
 
      // Gestion des routes sur le formulaire
-    function ouvrirModal(action) {
+    function ouvrirModal(action, unTitre) {
         const formulaire = document.getElementById('pointageForm');
+        const titre = document.querySelector('.container h2');
 
         formulaire.action = action;
+
+        if (titre) {
+            titre.innerText = unTitre;
+        }
         document.getElementById('id01').style.display = 'flex';
     }
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{asset('style.css')}}" type="text/css">
 </head>
 <body>
-    <h1>Importation du Fichier Excel</h1>
+    <h1>Opérations sur </h1>
     
        
     <a class="btn" href="{{ route('import')}}">Cliquer</a>
@@ -21,10 +21,27 @@
         <a class="btn" href="{{ route('insertHS') }}" > Insert heure</a>
         <a class="btn" href="{{ route('getPointageCoupe') }}" > Pointage coupe</a>                
       
-        <a class="btn" id="pointage_excel" onclick="ouvrirModal('{{ route('genererFichierPointageCoupe') }}')">Exportation Pointage coupe</a>
-        <a class="btn" id="mis_a_jr" onclick="ouvrirModal('{{ route('misAJourPointageCoupe') }}')">Mis à jour</a>
+        <a class="btn" id="pointage_excel" onclick="ouvrirModal('{{ route('genererFichierPointageCoupe') }}', 'Fichier Excel pointage coupe')">Exportation Pointage coupe</a>
+        <a class="btn" id="mis_a_jr" onclick="ouvrirModal('{{ route('misAJourPointageCoupe') }}', 'Mis à jour pointage coupe')">Mis à jour</a>      
+        <a class="btn" onclick="ouvrirModal('{{ route('pointageManquant')}}', 'Pointage manquant')">Pointage manquant</a>
         <a class="btn" href="{{ route('misAJourPointageCoupe') }}">Test</a>
-        <a href="{{ route('pointageManquant')}}">Pointage manqquant</a>
+
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>DIRECTION</th>
+                        <th>MATRICULE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>01</td>
+                        <td>129091</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
         <div id="id01" class="modal">                
                 <form class="modal-content" id ="pointageForm" method="GET" >

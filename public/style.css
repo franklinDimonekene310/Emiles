@@ -13,6 +13,18 @@ body {
     background-color: rgba(110, 126, 177, 0.3);
 }
 
+h1 {
+  width: 100%;
+  background-color: #1d1c1c;
+  margin-top: 0;
+  padding-bottom: 10px;
+  /*height: 400px;*/
+  color: whitesmoke;
+  border-radius: 5px;
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+ 
+}
 
 .btn {
     padding: 8px;
@@ -22,7 +34,8 @@ body {
     box-shadow: 0 8px 20px rgba(1, 1, 0, 0.3);
     background-color: rgb(116, 109, 156);
     /* font-weight: normal;     */
-    border: 0.5px solid white
+    border: none;
+    border-radius: 5px;
 }
 
 a {
@@ -42,11 +55,11 @@ button {
   color: white;
   padding: 14px 20px;
   margin: 8px 0;
-  border: none;
-  cursor: pointer;
+  border: none; 
+  cursor: pointer; 
   width: 100%;
   opacity: 0.9;
-  border-radius: 2px;
+  border-radius: 2px; 
   transition: opacity 0.5s ease;
 }
 
@@ -81,7 +94,7 @@ button:hover {
 .modal {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
-  z-index: 1000; /* Sit on top */
+  z-index: 100; /* Sit on top */
   inset: 0;
  
   justify-content : center;
@@ -258,11 +271,22 @@ hr {
     }
 }
 
-.btn#mis_a_jr {
+#mis_a_jr {
+  background-color: var(--couleur_bouton);
+}
+
+#pointage_excel {
   background-color: var(--couleur_bouton);
 }
 
 
-.btn#pointage_excel {
-  background-color: var(--couleur_bouton);
+/* Mis en forme de la table */
+table {
+  border:1px solid gray;
+  width: 100%;
+}
+
+tr, td, th {
+  border:1px solid gray;
+  border-collapse: collapse;
 }

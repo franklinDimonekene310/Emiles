@@ -14,14 +14,15 @@ use Illuminate\Http\Request;
 
 class PointageCoupeController extends Controller
 {
-    //
-    public function pointageManquant() {
-        $debut = '2026-07-21';
-        $fin   = '2026-07-31';
+    
+    public function pointageManquant(Request $request) {
+      // Affiche tableau des employés qui manquent des pontages à une plage des dates
 
+        $this->validationDate($request);
+       
         $datePointageManquant = [];
 
-        foreach (CarbonPeriod::create($debut, $fin) as $jour) {
+        foreach (CarbonPeriod::create($request->debutDecade, $request->finDecade) as $jour) {
 
             $date = $jour->format('Ymd');
 
@@ -48,15 +49,19 @@ class PointageCoupeController extends Controller
                     ' 87853',
                     ' 86841',
                     '137731',
-                    '131669',
+                    '131669'
                 ])
+                ->orderBy('IDDirection')
                 ->get();
 
             $datePointageManquant[$date] = $employes->groupBy('IDDirection')->toArray();
         }     
 
         
-           dd($datePointageManquant);
+       // dd($datePointageManquant);
+
+        return view('Excel', compact('datePointageManquant'));
+       
     }
 
     public function genererFichierPointageCoupe(Request $request) {
@@ -179,20 +184,7 @@ class PointageCoupeController extends Controller
     private function genererTableauDeBase(Request $request) {        
        // Role : générer un tableau ('IDEquipeJ', 'Matricule', 'DatePointage', 'IDPointage', 'IDTacheJ') à partir du pointage coupe
        // tables concernées : D_POINTAGE_DECADAIRE ET POINTAGE_JOURNALIER
-          $request->validate(
-                [
-                    'debutDecade' => ['required', 'date'],
-                    'finDecade'   => ['required', 'date', 'after_or_equal:debutDecade'],
-                ],
-                [
-                    'debutDecade.required' => 'Veuillez renseigner la date de début.',
-                    'debutDecade.date' => 'La date de début est invalide.',
-
-                    'finDecade.required' => 'Veuillez renseigner la date de fin.',
-                    'finDecade.date' => 'La date de fin est invalide.',
-                    'finDecade.after_or_equal' => 'La date de fin doit être supérieure ou égale à la date de début.',
-                ]
-            );
+        $this->validationDate($request);
       
         $dateDebutDecade = Carbon::parse($request->debutDecade); $dateFinDecade = Carbon::parse($request->finDecade);
        
@@ -252,5 +244,20 @@ class PointageCoupeController extends Controller
         return $fichierDeBase;
     }
 
-    
+    private function validationDate(Request $request) {
+        $request->validate(
+                [
+                    'debutDecade' => ['required', 'date'],
+                    'finDecade'   => ['required', 'date', 'after_or_equal:debutDecade'],
+                ],
+                [
+                    'debutDecade.required' => 'Veuillez renseigner la date de début.',
+                    'debutDecade.date' => 'La date de début est invalide.',
+
+                    'finDecade.required' => 'Veuillez renseigner la date de fin.',
+                    'finDecade.date' => 'La date de fin est invalide.',
+                    'finDecade.after_or_equal' => 'La date de fin doit être supérieure ou égale à la date de début.',
+                ]
+        );
+    }
 }
