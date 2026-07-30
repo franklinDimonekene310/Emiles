@@ -4,41 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Excel Export</title>
-    <link rel="stylesheet" href="{{asset('style.css')}}" type="text/css">
+    <link rel="stylesheet" href="{{asset('style.css')}}" type="text/css">    
 </head>
 <body>
-    <h1>Opérations sur </h1>
-    
-       
-    <a class="btn" href="{{ route('import')}}">Cliquer</a>
-    
-        <a class="btn" href="{{ route('pointage') }}" > Aller sur pointage</a>
-    
-    
-        <a class="btn" href="{{ route('updateHS') }}" >Update heure</a>
-    
-    
-        <a class="btn" href="{{ route('insertHS') }}" > Insert heure</a>
-        <a class="btn" href="{{ route('getPointageCoupe') }}" > Pointage coupe</a>                
-      
-        <a class="btn" id="pointage_excel" onclick="ouvrirModal('{{ route('genererFichierPointageCoupe') }}', 'Fichier Excel pointage coupe')">Exportation Pointage coupe</a>
-        <a class="btn" id="mis_a_jr" onclick="ouvrirModal('{{ route('misAJourPointageCoupe') }}', 'Mis à jour pointage coupe')">Mis à jour</a>      
-        <a class="btn" onclick="ouvrirModal('{{ route('pointageManquant')}}', 'Pointage manquant')">Pointage manquant</a>
-        <a class="btn" href="{{ route('misAJourPointageCoupe') }}">Test</a>
-
-        <div>
+        <h1>Opérations sur </h1>    
+        
+        
+            {{--<a class="btn" href="{{ route('import')}}">Cliquer</a> --}} 
+        <div id="div-modal">
+            <a class="btn" href="{{ route('pointage') }}" > Aller sur pointage</a>    
+        
+            <a class="btn" href="{{ route('updateHS') }}" >Update heure</a>    
+        
+            <a class="btn" href="{{ route('insertHS') }}" > Insert heure</a>
+            <a class="btn" href="{{ route('getPointageCoupe') }}" > Pointage coupe</a>                
+        
+            <a class="btn" id="pointage_excel" onclick="ouvrirModal('{{ route('genererFichierPointageCoupe') }}', 'Fichier Excel pointage coupe')">Exportation Pointage coupe</a>
+            <a class="btn" id="mis_a_jr" onclick="ouvrirModal('{{ route('misAJourPointageCoupe') }}', 'Mis à jour pointage coupe')">Mis à jour</a>    
+          
+        
+            <a class="btn" onclick="ouvrirModal('{{ route('pointageManquant')}}', 'Pointage manquant')">Pointage manquant</a>
+        </div>
+        <div id="container_table">
             <table>
                 <thead>
                     <tr>
-                        <th>DIRECTION</th>
-                        <th>MATRICULE</th>
+                        <th>Matricule - Nom Employé - Direction</th>                        
+                        <th>Date</th>                                           
                     </tr>
                 </thead>
                 <tbody>
+                   
+                    @forelse($datePointageManquant as $matr_nom_direction => $dates)
+                   
                     <tr>
-                        <td>01</td>
-                        <td>129091</td>
+                        <td>{{ $matr_nom_direction }}</td>
+                        <td>
+                            @foreach($dates as $date)
+                                {{ $date['Date'] }}<br>
+                            @endforeach
+                        </td>                        
                     </tr>
+                    @empty
+                    <tr>
+                        <td colspan="2"><em>Aucune !</em></td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

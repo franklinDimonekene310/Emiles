@@ -25,8 +25,9 @@ class PointageCoupeController extends Controller
         foreach (CarbonPeriod::create($request->debutDecade, $request->finDecade) as $jour) {
 
             $date = $jour->format('Ymd');
-
-            $employes = DB::connection('hfsql_personnel')
+            
+            // Regrouper pointage manquant par date pointage
+            /*$employes = DB::connection('hfsql_personnel')
                 ->table('EMPLOYES')
                 ->select(
                     'Matricule',
@@ -51,14 +52,49 @@ class PointageCoupeController extends Controller
                     '137731',
                     '131669'
                 ])
-                ->orderBy('IDDirection')
+                ->orderBy('Matricule')                
                 ->get();
 
-            $datePointageManquant[$date] = $employes->groupBy('IDDirection')->toArray();
+            $datePointageManquant[$date] = $employes->toArray();*/
+
+            // Regrouper pointage manquant par matricule
+             $employes = DB::connection('hfsql_personnel')
+                ->table('EMPLOYES')
+                ->select(
+                    'Matricule',
+                    'NomEmploye',
+                    'IDDirection',
+                    'IDGrade'
+                )
+                ->where('IDGrade','>','15')
+                ->where('IDFinActivite', '0')
+                ->where('DateEngagement', '<=', $date)
+                ->whereNotIn('Matricule', function ($query) use ($date) {
+                    $query->from('D_POINTAGE_DECADAIRE')
+                        ->select('Matricule')
+                        ->where('DatePointage', $date);
+                })
+                ->whereNotIn('Matricule', [
+                    '114396',
+                    '131627',
+                    '113148',
+                    ' 87853',
+                    ' 86841',
+                    '137731',
+                    '131669'
+                ])
+                ->orderBy('Matricule')                
+                ->get();
+
+            foreach($employes as $employe) {               
+                $datePointageManquant[$employe->Matricule.'-'.$employe->NomEmploye.'-'.$employe->IDDirection][] = [           
+                        'Date'        => $date
+                ];               
+            }
         }     
 
         
-       // dd($datePointageManquant);
+      // dd($datePointageManquant);
 
         return view('Excel', compact('datePointageManquant'));
        
