@@ -145,104 +145,15 @@ class importController extends Controller
         ];
     }
 
-    public function getPointage(){
-        // Role : Recuperation des pointages dans la table D_RESULTATS_PAIE
-        // Objectif : récuperation des jours ouvrables de l'employé pour la paie
-        // Destination : les données sont envoyées à la CNSS 
-        // contraintes : IDTypePaie = '01', DateCalcul = si le calcul se fait au mois de la paie concerné on considere la date du calcul
-        // si le calcul se fait au moins prochain, on prend la plage entre 25 du mois de la paie concerné et la date à laquelle le calcul se fait.
-        // si le pointage d'un employé excede 26 jours, on remet à 26 jours. Le pointage doit etre un entier.
-
-        $matricule = [
-               'KWILU BRIQUES'
-           ];
-       
-        $matriculeTraites = [];
-        $matriculeNonTraites = [];
-
-         // $emp = DB::table('employes')->whereIn('Matricule', $matricule)->get('Matricule')->toArray();
-         // dd('Code utilisé pour copie des employés de HFSQL vers PostGres');
-        $employesHFSQL = DB::connection('hfsql')->table('Societe')
-        ->get();
-
-        dd($employesHFSQL);
-/*
-        $books = DB::connection('hfsql')
-            ->table('Societe')
-            ->where('RaisonSociale', 'KWILU BRIQUES')
-            ->get();
-
-            dd($books);*/
-
-    }
-
-
-    public function getPointageCoupe() {
     
-        // Role : 1. Recuperation des pointages dans la table D_POINTAGE_DECADAIRE, 2. Récupération des équipes dans la table POINTAGE_JOURNALIERS
-        // Objectif : Générer un fichier Excel pour le traitement de l'insertion dans la table POINTAGE_JOURNALIERS
-        // Destination : les données sont envoyées à la CNSS 
-        // contraintes : IDTypePaie = '01', DateCalcul = si le calcul se fait au mois de la paie concerné on considere la date du calcul
-        // si le calcul se fait au moins prochain, on prend la plage entre 25 du mois de la paie concerné et la date à laquelle le calcul se fait.
-        // si le pointage d'un employé excede 26 jours, on remet à 26 jours. Le pointage doit etre un entier.
-
-    // récupération des pointages
-        $pointages = DB::connection('hfsql_personnel')
-        ->table('D_POINTAGE_DECADAIRE')
-        ->select(
-            'Matricule',
-            'DatePointage',
-            'IDPointage',
-            'IDTache',
-            'Matricule_DateDebutDecade'
-        )
-        ->where('DatePointage', '>=', '20260620')
-        ->where('DatePointage', '<=', '20260629')
-        ->where('IDPointage', 20)
-        ->get();
-        
-        // préparation pour excel
-       
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-
-            // Entêtes
-            $sheet->fromArray([
-                [
-                    'Matricule',
-                    'DatePointage',
-                    'IDPointage',
-                    'IDTache',                   
-                    'Matricule_DateDebutDecade'
-                ]
-            ]);
-
-            $ligne = 2;
-
-            foreach ($pointages as $pointage) {
-                // Forcer le type Texte
-                $sheet->setCellValueExplicit("A{$ligne}", (string) $pointage->Matricule, Datatype::TYPE_STRING);               
-                $sheet->setCellValueExplicit("B{$ligne}", (string) $pointage->DatePointage, DataType::TYPE_STRING);
-                $sheet->setCellValueExplicit("C{$ligne}", (string) $pointage->IDPointage, DataType::TYPE_STRING);
-                $sheet->setCellValueExplicit("D{$ligne}", (string) $pointage->IDTache, DataType::TYPE_STRING);                 
-                $sheet->setCellValueExplicit("E{$ligne}", (string) $pointage->Matricule_DateDebutDecade, DataType::TYPE_STRING);
-
-                $ligne++;
-            }
-
-            $writer = new Xlsx($spreadsheet);
-            $writer->save(storage_path('app/PointageDecadaire.xlsx'));
-        dd('fait');
-
-    }
-
     public function updateHS() {
         /* Préparer une requete Sql pour la mis à jour des heures supplémentaire
            Les heures supplémentaires sont puisées dans un fichier Excel
         */
-        $path = 'C:\Users\B.NIMI\Desktop\DIVERS\heure_employes_ok_UPDATE.xlsx';
+          
+        $path = 'C:\Users\B.NIMI\Desktop\DIVERS\HS JUIL 2026\a modifier.xlsx';
        // $path = public_path('Cotisation Cnss.xlsx');        
-        $lignes = (new FastExcel)->sheet(2)->import($path);
+        $lignes = (new FastExcel)->sheet(1)->import($path);
 
         $case_130 = [];
         $case_160 = [];
@@ -286,14 +197,18 @@ class importController extends Controller
 
             WHERE Matricule IN (" . implode(',', $matricules) . ")
             AND AnneeMoisHS = '202607'
-            AND DateCreationHS = '20260729';
+            AND DateCreationHS = '20260731';
             ";
-        dd($sql);
+
+            $nbLignes = DB::connection('hfsql_personnel')
+              ->affectingStatement($sql);
+
+            dd('Lignes affectées ' . $nbLignes);
     }
 
     public function insertHS() {
-
-        $path = 'C:\Users\B.NIMI\Desktop\DIVERS\heure_employes_ok_UPDATE.xlsx';
+       
+        $path = 'C:\Users\B.NIMI\Desktop\DIVERS\HS JUIL 2026\a inserer.xlsx';
        // $path = public_path('Cotisation Cnss.xlsx');        
         $lignes = (new FastExcel)->sheet(1)->import($path);
 
@@ -305,7 +220,8 @@ class importController extends Controller
         $insertValues = [];
 
         foreach ($lignes as $ligne) {
-
+            
+        // Forcer le matricule à avoir 6 caractères
             $matricule = str_pad($ligne['matricule'], 6, ' ', STR_PAD_LEFT);
 
             $hs130 = (float) $ligne['_130'];
@@ -324,7 +240,7 @@ class importController extends Controller
                 {$hs160},
                 {$hs200},
                 '0',
-                '20260729',
+                '20260731',
                 DEFAULT
             )";
         }

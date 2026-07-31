@@ -66,7 +66,8 @@ class PointageCoupeController extends Controller
                     'IDDirection',
                     'IDGrade'
                 )
-                ->where('IDGrade','>','15')
+                //->where('IDGrade','>','15')  // Cadre sup
+                ->where('IDGrade','=','01')    // Coupeur
                 ->where('IDFinActivite', '0')
                 ->where('DateEngagement', '<=', $date)
                 ->whereNotIn('Matricule', function ($query) use ($date) {
@@ -83,20 +84,23 @@ class PointageCoupeController extends Controller
                     '137731',
                     '131669'
                 ])
-                ->orderBy('Matricule')                
+                //->orderBy('Matricule')                
+                ->orderBy('IDDirection')                
                 ->get();
-
+            /*
             foreach($employes as $employe) {               
                 $datePointageManquant[$employe->Matricule.'-'.$employe->NomEmploye.'-'.$employe->IDDirection][] = [           
                         'Date'        => $date
                 ];               
-            }
+            }*/
+
+            $datePointageManquant[$date] = $employes->toArray();
         }     
 
         
-      // dd($datePointageManquant);
+       dd($datePointageManquant);
 
-        return view('Excel', compact('datePointageManquant'));
+        //return view('Excel', compact('datePointageManquant'));
        
     }
 
@@ -105,10 +109,15 @@ class PointageCoupeController extends Controller
         // Objectif : Générer un fichier Excel pour le traitement de l'insertion dans la table POINTAGE_JOURNALIERS       
         // contraintes : DatePointage et IDPointage        
        
-        $fichierDeBase = $this->genererTableauDeBase($request);       
+        $fichierDeBase = $this->genererTableauDeBase($request);  
+        
+        // Code à améloirer 
+           $dateDebutDecade = Carbon::parse($request->debutDecade)->format('dmY');                      
+          // dd($dateDebutDecade, $dateFinDecade );
+        ////////
        
         $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet()->setTitle('Pointages Coupe');
+        $sheet = $spreadsheet->getActiveSheet()->setTitle('Coupe Dec '. $dateDebutDecade);
 
         $spreadsheet->getDefaultStyle()
         ->getFont()

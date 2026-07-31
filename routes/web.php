@@ -18,10 +18,9 @@ Route::get('/excel', function () {
 
 
 Route::get('/import', [importController::class, 'readExcelFile'])->name('import');
-Route::get('/pointage', [importController::class, 'getPointage'])->name('pointage');
 Route::get('/update', [importController::class, 'updateHS'])->name('updateHS');
 Route::get('/insert', [importController::class, 'insertHS'])->name('insertHS');
-Route::get('/pointage_coupe', [importController::class, 'getPointageCoupe'])->name('getPointageCoupe');
+
 
 Route::get('/exportation_pointage_en_excel', [PointageCoupeController::class, 'genererFichierPointageCoupe'])->name('genererFichierPointageCoupe');
 Route::get('/mis_a_jour_pointage', [PointageCoupeController::class, 'misAJourPointageCoupe'])->name('misAJourPointageCoupe');

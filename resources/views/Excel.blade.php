@@ -12,12 +12,11 @@
         
             {{--<a class="btn" href="{{ route('import')}}">Cliquer</a> --}} 
         <div id="div-modal">
-            <a class="btn" href="{{ route('pointage') }}" > Aller sur pointage</a>    
+           
         
             <a class="btn" href="{{ route('updateHS') }}" >Update heure</a>    
         
-            <a class="btn" href="{{ route('insertHS') }}" > Insert heure</a>
-            <a class="btn" href="{{ route('getPointageCoupe') }}" > Pointage coupe</a>                
+            <a class="btn" href="{{ route('insertHS') }}" > Insert heure</a>                         
         
             <a class="btn" id="pointage_excel" onclick="ouvrirModal('{{ route('genererFichierPointageCoupe') }}', 'Fichier Excel pointage coupe')">Exportation Pointage coupe</a>
             <a class="btn" id="mis_a_jr" onclick="ouvrirModal('{{ route('misAJourPointageCoupe') }}', 'Mis à jour pointage coupe')">Mis à jour</a>    
@@ -35,7 +34,7 @@
                 </thead>
                 <tbody>
                    
-                    @forelse($datePointageManquant as $matr_nom_direction => $dates)
+                    {{-- @forelse($datePointageManquant as $matr_nom_direction => $dates)
                    
                     <tr>
                         <td>{{ $matr_nom_direction }}</td>
@@ -49,7 +48,7 @@
                     <tr>
                         <td colspan="2"><em>Aucune !</em></td>
                     </tr>
-                    @endforelse
+                    @endforelse--}}
                 </tbody>
             </table>
         </div>

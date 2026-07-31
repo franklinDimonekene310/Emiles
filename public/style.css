@@ -127,11 +127,16 @@ button:hover {
   width: 50%; /* Could be more or less, depending on screen size */
   position: relative;
   border-radius: 7px;
+  max-width: 550px;
 
 }
 
 .modal-content label, input {
-  font-family: 'Courier New', Courier, monospace;
+  
+  padding: 5px;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 1rem;
+
 }
 
 /* Style the horizontal ruler */
