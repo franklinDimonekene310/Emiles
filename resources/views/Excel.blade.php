@@ -23,7 +23,10 @@
           
         
             <a class="btn" onclick="ouvrirModal('{{ route('pointageManquant')}}', 'Pointage manquant')">Pointage manquant</a>
+
+            
         </div>
+        <button class="btn-glass">Valider</button>
         <div id="container_table">
             <table>
                 <thead>
