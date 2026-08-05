@@ -20,13 +20,13 @@
         
             <a class="btn" id="pointage_excel" onclick="ouvrirModal('{{ route('genererFichierPointageCoupe') }}', 'Fichier Excel pointage coupe')">Exportation Pointage coupe</a>
             <a class="btn" id="mis_a_jr" onclick="ouvrirModal('{{ route('misAJourPointageCoupe') }}', 'Mis à jour pointage coupe')">Mis à jour</a>    
-          
-        
+                  
             <a class="btn" onclick="ouvrirModal('{{ route('pointageManquant')}}', 'Pointage manquant')">Pointage manquant</a>
+            <a class="btn" href="{{ route('fichierCnss')}}">Fichier Cnss</a>
 
             
         </div>
-        <button class="btn-glass">Valider</button>
+        
         <div id="container_table">
             <table>
                 <thead>

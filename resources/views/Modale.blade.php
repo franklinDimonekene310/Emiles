@@ -44,6 +44,64 @@
             transform: scale(1.2);
             color: #a71d2a;
         }
+
+        /* ============================
+       BUTTON GLASMORPHISM
+       =============================*/
+
+.btn-glass {
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 14px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), 
+              inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-glass:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-3px);
+    box-shadow:
+        0 12px 35px rgba(0, 0, 0, 0.3),
+        inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+.btn-glass:active {
+    transform: translateY(1px);
+}
+
+
+   .btn-glass {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-glass::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -120%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.5),
+        transparent
+    );
+    transition: left 0.6s ease;
+}
+
+.btn-glass:hover::before {
+    left: 140%;
+}
         
     </style>
 </head>
@@ -55,7 +113,7 @@
         <a href="#" id="close">&#10005;</a>
     </div>
    </div>
-
+<button class="btn-glass">Valider</button>
   <script>
     let open = document.querySelector('#open');
     let close = document.querySelector('#close');

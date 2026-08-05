@@ -98,9 +98,9 @@ class PointageCoupeController extends Controller
         }     
 
         
-       dd($datePointageManquant);
+       //dd($datePointageManquant);
 
-        //return view('Excel', compact('datePointageManquant'));
+        return view('Excel', compact('datePointageManquant'));
        
     }
 

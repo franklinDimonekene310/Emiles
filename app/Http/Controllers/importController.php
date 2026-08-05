@@ -13,40 +13,50 @@ use Illuminate\Http\Request;
 class importController extends Controller
 {
     //
-    public function readExcelFile()
+    public function fichierCnss()
     {
         // ROLE : produire un fichier excel contenant des informations à envoyer à la CNSS pour une paie donnée
-        //$path = 'C:\Users\B.NIMI\Desktop\DIVERS - Copie\Cotisation Cnss.xlsx';      
-        $path = public_path('Cotisation Cnss.xlsx');
+        $path = 'C:\Users\B.NIMI\Desktop\DIVERS\COTISATION CNSS.xlsx';      
         
-        $privileges = (new FastExcel)->sheet(1)->import($path);
+        // dd($path, file_exists($path), is_file($path), is_readable($path));
 
+        $privileges = (new FastExcel)->sheet(2)->import($path);
+       
+        $jourCnn = $this->jourCnn();        
+        $iprCnn = $this->iprCnn();
+        
         $cnn = [];
         $nomBrut = [];
+      
         foreach ($privileges as $privilege) {
             
             $nomBrut = $this->decouperNom($privilege['Nom']);
 
-            $cnn[] = [
-                'NUMERO INSS' => $privilege['NUMERO INSS'],
+            $cnn[] = [                
+                'NUMERO INSS' => $privilege['TypePaie'] != '06' ? ($privilege['NUMERO INSS'] ?? null) : null,               
                 'Matricule' => $privilege['Matricule'],
                 'Nom' => $nomBrut['nom'],
                 'Post noms' =>   $nomBrut['postnom'],
                 'Prenom' =>  $nomBrut['prenom'],
                 'Type travailleur(1=Travailleur , 2=Assimile)' => '',
                 'Commune  ou Territoire affectation' => (trim($privilege['LIBELLE SITE']) === 'KWILU-NGONGO') ? "MBANZA-NGUNGU" : "GOMBE",
-                'Période Cotisee (jj/mm/aaaa)' => '',
+                'Période Cotisee (jj/mm/aaaa)' => '01/07/2026',
                 'Montant Cotise' => $privilege['COTISATION INSS'],
-                'Nbre De Jours de travail' => '26',
-                'Nbre De heure de travail' => '',
+                'Nbre De Jours de travail' => $privilege['TypePaie'] != '06' ? ($jourCnn[$privilege['Matricule']] ?? null) : null,
+                'Nbre De heure de travail' => "",
                 'Montant Brut Imposable' => $privilege['BRUT INSS'],
-                 'IPR' => '',
+                'IPR' => $iprCnn[$privilege['Matricule']][$privilege['TypePaie']],
+                'Libellé' => $privilege['Libellé Paie']
             ];
-        }
-                      
-       //(new FastExcel($cnn))->export(public_path('CNN TRAITE.xlsx'));
 
-        /// Mise en forme avec phpSpread
+            
+        }
+
+       
+                      
+        //(new FastExcel($cnn))->export(public_path('CNN TRAITE.xlsx'));
+
+            /// Mise en forme avec phpSpread
             $spreadsheet = new Spreadsheet();
 
             $sheet = $spreadsheet->getActiveSheet();
@@ -68,7 +78,68 @@ class importController extends Controller
 
             $writer = new Xlsx($spreadsheet);
             $writer->save(public_path('CNN TRAITE.xlsx'));
+           
             dd('fait');
+    }
+
+    private function jourCnn() {
+        
+               $sql = "
+                SELECT
+                    T.Matricule,
+                    CASE
+                        WHEN T.TotalPointage > 26 THEN 26
+                        ELSE T.TotalPointage
+                    END AS PointageAjuste
+                FROM
+                (
+                    SELECT
+                        E_RESULTATS_PAIE.Matricule,
+                        SUM(D_RESULTATS_PAIE.Pointage) AS TotalPointage
+                    FROM E_RESULTATS_PAIE
+                    INNER JOIN D_RESULTATS_PAIE
+                        ON E_RESULTATS_PAIE.Matricule_Date_Heure_TypePaie =
+                        D_RESULTATS_PAIE.Matricule_Date_Heure_TypePaie
+                    WHERE E_RESULTATS_PAIE.AnneeMoisPaie = '202607'
+                    AND D_RESULTATS_PAIE.IDRubrique IN
+                    ('1101','1102','1103','1104','1105','1106','1107',
+                    '1109','1110','1119','1120','1121') AND E_RESULTATS_PAIE.Matricule IN ('   523', '   539', '   714', ' 75381', ' 79345', '129091')
+                    GROUP BY E_RESULTATS_PAIE.Matricule
+                ) T
+                ";    
+
+            return collect(DB::connection('hfsql_personnel')->select($sql))->pluck('PointageAjuste','Matricule');               
+    }
+
+    public function fusionTypePaie() {
+        
+    }
+
+    private function iprCnn() {
+        
+               $sql = "
+                SELECT
+                    E_RESULTATS_PAIE.Matricule,
+                    D_RESULTATS_PAIE.IDtypePaie,
+                    SUM(D_RESULTATS_PAIE.MontantPaie) AS Ipr
+                FROM E_RESULTATS_PAIE
+                INNER JOIN D_RESULTATS_PAIE
+                    ON E_RESULTATS_PAIE.Matricule_Date_Heure_TypePaie =
+                    D_RESULTATS_PAIE.Matricule_Date_Heure_TypePaie
+                WHERE E_RESULTATS_PAIE.AnneeMoisPaie = '202607'
+                AND D_RESULTATS_PAIE.IDRubrique =
+                '1570' AND E_RESULTATS_PAIE.Matricule IN ('   523', '   539', '   714', ' 75381', ' 79345', '129091')
+                GROUP BY E_RESULTATS_PAIE.Matricule, D_RESULTATS_PAIE.IDtypePaie
+                ";    
+            $resultats = DB::connection('hfsql_personnel')->select($sql);
+
+            $datas = [];
+
+            foreach($resultats as $data) {
+                $datas[$data->Matricule][$data->IDtypePaie] = $data->Ipr;
+            }
+
+            return $datas;               
     }
 
     private  function decouperNom($nomBrut)

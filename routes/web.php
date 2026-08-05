@@ -17,9 +17,10 @@ Route::get('/excel', function () {
 })->name('excel');
 
 
-Route::get('/import', [importController::class, 'readExcelFile'])->name('import');
+Route::get('/import', [importController::class, 'fichierCnss'])->name('fichierCnss');
 Route::get('/update', [importController::class, 'updateHS'])->name('updateHS');
 Route::get('/insert', [importController::class, 'insertHS'])->name('insertHS');
+Route::get('/jour', [importController::class, 'iprCnn'])->name('iprCnn');
 
 
 Route::get('/exportation_pointage_en_excel', [PointageCoupeController::class, 'genererFichierPointageCoupe'])->name('genererFichierPointageCoupe');
