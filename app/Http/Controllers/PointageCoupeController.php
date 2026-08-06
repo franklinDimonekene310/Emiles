@@ -65,9 +65,10 @@ class PointageCoupeController extends Controller
                     'NomEmploye',
                     'IDDirection',
                     'IDGrade'
-                )
+                )                
                 //->where('IDGrade','>','15')  // Cadre sup
-                ->where('IDGrade','=','01')    // Coupeur
+                //->where('IDGrade','=','01')    // Coupeur
+                //->where('IDDirection', '<>', '05')     // Agronomique
                 ->where('IDFinActivite', '0')
                 ->where('DateEngagement', '<=', $date)
                 ->whereNotIn('Matricule', function ($query) use ($date) {
@@ -84,8 +85,9 @@ class PointageCoupeController extends Controller
                     '137731',
                     '131669'
                 ])
-                //->orderBy('Matricule')                
-                ->orderBy('IDDirection')                
+                ->whereIn('Matricule', ['139818','139815', '139816', '139814', '139817', '139813', ' 86300', '140193', '129091'])
+                ->orderBy('Matricule')                
+                //->orderBy('IDDirection')                
                 ->get();
             /*
             foreach($employes as $employe) {               
@@ -98,9 +100,9 @@ class PointageCoupeController extends Controller
         }     
 
         
-       //dd($datePointageManquant);
+       dd($datePointageManquant);
 
-        return view('Excel', compact('datePointageManquant'));
+        // return view('Excel', compact('datePointageManquant'));
        
     }
 

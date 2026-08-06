@@ -21,9 +21,9 @@ class importController extends Controller
         // dd($path, file_exists($path), is_file($path), is_readable($path));
 
         $privileges = (new FastExcel)->sheet(2)->import($path);
-       
+        
         $jourCnn = $this->jourCnn();        
-        $iprCnn = $this->iprCnn();
+        $iprCnn = $this->iprCnn();       
         
         $cnn = [];
         $nomBrut = [];
@@ -47,16 +47,14 @@ class importController extends Controller
                 'Montant Brut Imposable' => $privilege['BRUT INSS'],
                 'IPR' => $iprCnn[$privilege['Matricule']][$privilege['TypePaie']],
                 'Libellé' => $privilege['Libellé Paie']
-            ];
-
-            
+            ];            
         }
 
-       
+        //$this->sommerTypepaie($cnn);
                       
-        //(new FastExcel($cnn))->export(public_path('CNN TRAITE.xlsx'));
-
-            /// Mise en forme avec phpSpread
+        (new FastExcel($cnn))->export(public_path('CNN TRAITE.xlsx'));
+dd('fait');
+            // Mise en forme avec phpSpread
             $spreadsheet = new Spreadsheet();
 
             $sheet = $spreadsheet->getActiveSheet();
@@ -81,6 +79,55 @@ class importController extends Controller
            
             dd('fait');
     }
+    
+    private function sommerTypepaie($cnn) {
+        // Role : sommer tout type des paie sauf le décompte final
+        
+        // filtrage des matricules multiples
+        $tableauFiltre = collect($cnn)
+        ->groupBy('Matricule')
+        ->filter(function ($lignes) {
+            return $lignes->count() >= 2;
+            })
+            ->flatten(1);
+          // dd($tableauFiltre); 
+        // Regrouper 
+
+        $tableau2 = $tableauFiltre
+            ->groupBy('Matricule')
+            ->flatMap(function ($lignes, $matricule) {
+
+                $resultat = collect();
+
+                // Somme de tous les types sauf DECOMPTE FINAL
+                $montantFusion = $lignes
+                    ->where('TypePaie', '!=', 'DECOMPTE FINAL')
+                    ->sum('Montant Cotise');
+
+                if ($montantFusion > 0) {
+
+                    $resultat->push([
+                        'Matricule' => $matricule,
+                        'Montant Cotise' => $montantFusion,
+                        'TypePaie' => 'FUSION'
+                    ]);
+                }
+
+                // Garder DECOMPTE FINAL tel quel
+                $decompte = $lignes
+                    ->where('TypePaie', 'DECOMPTE FINAL')
+                    ->first();
+
+                if ($decompte) {
+                    $resultat->push($decompte);
+                }
+
+                return $resultat;
+            })
+            ->values();
+
+            dd($tableau2);
+    }
 
     private function jourCnn() {
         
@@ -103,7 +150,7 @@ class importController extends Controller
                     WHERE E_RESULTATS_PAIE.AnneeMoisPaie = '202607'
                     AND D_RESULTATS_PAIE.IDRubrique IN
                     ('1101','1102','1103','1104','1105','1106','1107',
-                    '1109','1110','1119','1120','1121') AND E_RESULTATS_PAIE.Matricule IN ('   523', '   539', '   714', ' 75381', ' 79345', '129091')
+                    '1109','1110','1119','1120','1121')
                     GROUP BY E_RESULTATS_PAIE.Matricule
                 ) T
                 ";    
@@ -111,10 +158,7 @@ class importController extends Controller
             return collect(DB::connection('hfsql_personnel')->select($sql))->pluck('PointageAjuste','Matricule');               
     }
 
-    public function fusionTypePaie() {
-        
-    }
-
+    
     private function iprCnn() {
         
                $sql = "
@@ -128,11 +172,11 @@ class importController extends Controller
                     D_RESULTATS_PAIE.Matricule_Date_Heure_TypePaie
                 WHERE E_RESULTATS_PAIE.AnneeMoisPaie = '202607'
                 AND D_RESULTATS_PAIE.IDRubrique =
-                '1570' AND E_RESULTATS_PAIE.Matricule IN ('   523', '   539', '   714', ' 75381', ' 79345', '129091')
+                '1570'
                 GROUP BY E_RESULTATS_PAIE.Matricule, D_RESULTATS_PAIE.IDtypePaie
                 ";    
             $resultats = DB::connection('hfsql_personnel')->select($sql);
-
+            //  AND E_RESULTATS_PAIE.Matricule IN ('   523', '   539', '   714', ' 75381', ' 79345', '129091')
             $datas = [];
 
             foreach($resultats as $data) {
