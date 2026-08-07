@@ -16,12 +16,14 @@ class importController extends Controller
     public function fichierCnss()
     {
         // ROLE : produire un fichier excel contenant des informations à envoyer à la CNSS pour une paie donnée
-        $path = 'C:\Users\B.NIMI\Desktop\DIVERS\COTISATION CNSS.xlsx';      
+        //$path = 'C:\Users\B.NIMI\Desktop\DIVERS\COTISATION CNSS.xlsx';   
+         $path = public_path('COTISATION CNSS - Juillet26.xlsx');
+        //$collection = (new FastExcel)->sheet(4)->import($path);    
         
         // dd($path, file_exists($path), is_file($path), is_readable($path));
 
-        $privileges = (new FastExcel)->sheet(2)->import($path);
-        
+        $privileges = (new FastExcel)->sheet(3)->import($path);
+       
         $jourCnn = $this->jourCnn();        
         $iprCnn = $this->iprCnn();       
         
@@ -45,88 +47,81 @@ class importController extends Controller
                 'Nbre De Jours de travail' => $privilege['TypePaie'] != '06' ? ($jourCnn[$privilege['Matricule']] ?? null) : null,
                 'Nbre De heure de travail' => "",
                 'Montant Brut Imposable' => $privilege['BRUT INSS'],
-                'IPR' => $iprCnn[$privilege['Matricule']][$privilege['TypePaie']],
-                'Libellé' => $privilege['Libellé Paie']
+                'ALLOC FAM' => $privilege['ALLOC FAM'],
+                'IPR' => (float) $iprCnn[$privilege['Matricule']][$privilege['TypePaie']],
+                'Libellé Paie' => $privilege['Libellé Paie']
             ];            
         }
 
-        //$this->sommerTypepaie($cnn);
-                      
-        (new FastExcel($cnn))->export(public_path('CNN TRAITE.xlsx'));
-dd('fait');
+           $cnn = $this->sommerTypepaie($cnn); 
+       
             // Mise en forme avec phpSpread
-            $spreadsheet = new Spreadsheet();
+            $spreadsheet = new Spreadsheet();           
 
             $sheet = $spreadsheet->getActiveSheet();
+            $sheet->setTitle('Cotis Cnss');
+
+            $spreadsheet->getDefaultStyle()
+            ->getFont()
+            ->setName('Arial')
+            ->setSize(10);
 
             // Écriture des données
-            $headers = array_keys($cnn[0]);
-            $rows = array_map('array_values', $cnn);
+           $data = $cnn->toArray();
 
-            $sheet->fromArray($headers, null, 'A1');
-            $sheet->fromArray($rows, null, 'A2');
-            
-            // Appliquer Arial 10 à toute la feuille
-            $sheet->getStyle('A:Z')->applyFromArray([
-                'font' => [
-                    'name' => 'Arial',
-                    'size' => 10,
-                ],
-            ]);
+            if (!empty($data)) {
+                $sheet->fromArray(array_keys($data[0]), null, 'A1');
+                $sheet->fromArray(array_map('array_values', $data), null, 'A2');
+            }           
+
+            // Mettre les en-têtes en gras
+            $sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1')
+            ->getFont()
+            ->setBold(true);
 
             $writer = new Xlsx($spreadsheet);
-            $writer->save(public_path('CNN TRAITE.xlsx'));
+            $writer->save(public_path('CNN TRAITE03.xlsx'));
            
             dd('fait');
     }
     
-    private function sommerTypepaie($cnn) {
-        // Role : sommer tout type des paie sauf le décompte final
-        
+    public function sommerTypepaie($collection) {
+            
+        // Role : sommer tout type des paie par matricule sauf le décompte final          
+            
         // filtrage des matricules multiples
-        $tableauFiltre = collect($cnn)
-        ->groupBy('Matricule')
-        ->filter(function ($lignes) {
-            return $lignes->count() >= 2;
-            })
-            ->flatten(1);
-          // dd($tableauFiltre); 
-        // Regrouper 
-
-        $tableau2 = $tableauFiltre
+        $resultat = collect($collection)
             ->groupBy('Matricule')
-            ->flatMap(function ($lignes, $matricule) {
+            ->flatMap(function ($lignes) {
+
+                [$fusionnables, $decomptes] = $lignes->partition(function ($ligne) {
+                    return trim($ligne['Libellé Paie']) !== 'DECOMPTE FINAL';
+                });
 
                 $resultat = collect();
 
-                // Somme de tous les types sauf DECOMPTE FINAL
-                $montantFusion = $lignes
-                    ->where('TypePaie', '!=', 'DECOMPTE FINAL')
-                    ->sum('Montant Cotise');
+                if ($fusionnables->count() > 1) {
+                    
+                    $ligne = $fusionnables->first();                   
 
-                if ($montantFusion > 0) {
+                    foreach (['Montant Brut Imposable', 'ALLOC FAM', 'Montant Cotise', 'IPR'] as $colonne) {
+                        $ligne[$colonne] = $fusionnables->sum(fn($item) => (float) ($item[$colonne] ?: 0));
+                    }
 
-                    $resultat->push([
-                        'Matricule' => $matricule,
-                        'Montant Cotise' => $montantFusion,
-                        'TypePaie' => 'FUSION'
-                    ]);
+                    $ligne['Libellé Paie'] = 'Fusion';
+
+                    $resultat->push($ligne);
+
+                } elseif ($fusionnables->count() == 1) {
+
+                    $resultat->push($fusionnables->first());
                 }
 
-                // Garder DECOMPTE FINAL tel quel
-                $decompte = $lignes
-                    ->where('TypePaie', 'DECOMPTE FINAL')
-                    ->first();
-
-                if ($decompte) {
-                    $resultat->push($decompte);
-                }
-
-                return $resultat;
+                return $resultat->concat($decomptes->values());
             })
-            ->values();
-
-            dd($tableau2);
+            ->values();          
+            // Regrouper 
+            return $resultat;            
     }
 
     private function jourCnn() {
@@ -135,8 +130,8 @@ dd('fait');
                 SELECT
                     T.Matricule,
                     CASE
-                        WHEN T.TotalPointage > 26 THEN 26
-                        ELSE T.TotalPointage
+                        WHEN CEIL(T.TotalPointage) > 26 THEN 26
+                        ELSE CEIL(T.TotalPointage)
                     END AS PointageAjuste
                 FROM
                 (
@@ -381,5 +376,19 @@ dd('fait');
             ";
             dd($sqlInsert);
             //DB::statement($sqlInsert);
+    }
+
+
+    public function test () {
+        $nourritures = [
+                ['name' => 'tomate', 'category'=> 'fruit'], ['name' => 'mangue', 'category'=> 'fruit'] , ['name' => 'banane', 'category'=> 'fruit'],
+                ['name' => 'croissant', 'category'=> 'patisserie'], ['name' => 'pain', 'category'=> 'patisserie'] , ['name' => 'biscuit', 'category'=> 'patisserie']
+            ];
+        
+            [$fruits, $patisserie] = collect($nourritures)->partition(function ($nourriture) {
+                return $nourriture['category'] == 'fruit';
+            });
+
+            dd($fruits, $patisserie);
     }
 }

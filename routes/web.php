@@ -22,6 +22,8 @@ Route::get('/update', [importController::class, 'updateHS'])->name('updateHS');
 Route::get('/insert', [importController::class, 'insertHS'])->name('insertHS');
 Route::get('/jour', [importController::class, 'iprCnn'])->name('iprCnn');
 
+Route::get('/somme', [importController::class, 'sommerTypepaie'])->name('sommerTypepaie');
+
 
 Route::get('/exportation_pointage_en_excel', [PointageCoupeController::class, 'genererFichierPointageCoupe'])->name('genererFichierPointageCoupe');
 Route::get('/mis_a_jour_pointage', [PointageCoupeController::class, 'misAJourPointageCoupe'])->name('misAJourPointageCoupe');

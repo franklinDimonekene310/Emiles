@@ -23,7 +23,7 @@
                   
             <a class="btn" onclick="ouvrirModal('{{ route('pointageManquant')}}', 'Pointage manquant')">Pointage manquant</a>
             <a class="btn" href="{{ route('fichierCnss')}}">Fichier Cnss</a>
-
+            <input type="month">
             
         </div>
         

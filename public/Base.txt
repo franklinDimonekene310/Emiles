@@ -1,0 +1,473 @@
+
+e-mail : F.Dimonekene@cskn.cd
+
+
+SELECT 
+  EMPLOYES.Matricule,
+  EMPLOYES.NomEmploye AS "Nom & Postom",
+  CODE_DIRECTION.LibDirection as "Direction",
+  CODE_EQUIPE.LibEquipe  as "Equipe",
+CASE
+    WHEN EMPLOYES.IDFinActivite = 0 THEN "Actif" 
+    ELSE result
+END as "Observation"
+FROM 
+EMPLOYES join CODE_DIRECTION on EMPLOYES.IDDirection = CODE_DIRECTION.IDDirection
+join CODE_EQUIPE on EMPLOYES.IDEquipe = CODE_EQUIPE.IDEquipe
+join CODE_EQUIPE on EMPLOYES.IDSousEquipe = CODE_EQUIPE.IDSousEquipe
+WHERE
+EMPLOYES.Matricule in  ('129091', ' 77315', ' 79884')
+
+
+
+-- Les membres de cam du Janvier 2024 à Novembre 2024 --
+
+SELECT MOUVEMENTS_PAIE.Matricule, EMPLOYES.NomEmploye, sum(MOUVEMENTS_PAIE.MontantTotal) as Contribution, 
+CODE_DIRECTION.LibDirection, 
+CODE_EQUIPE.LibEquipe, STRING_AGG(MOUVEMENTS_PAIE.AnneeMoisMvtPaie, ';') as Details
+from MOUVEMENTS_PAIE inner join EMPLOYES on MOUVEMENTS_PAIE.Matricule = EMPLOYES.Matricule
+inner join CODE_DIRECTION on EMPLOYES.IDDirection = CODE_DIRECTION.IDDirection
+inner join CODE_EQUIPE on EMPLOYES.IDEquipe = CODE_EQUIPE.IDEquipe
+inner join CODE_EQUIPE on EMPLOYES.IDSousEquipe = CODE_EQUIPE.IDSousEquipe
+where 
+MOUVEMENTS_PAIE.AnneeMoisMvtPaie in ('202411','202410', '202409', '202408', '202407', '202406', '202405', '202404', '202403', '202402', '202401')
+AND
+MOUVEMENTS_PAIE.IDRubrique = '1401'
+AND
+MOUVEMENTS_PAIE.CodeTraitMvtPaie = '1'
+group by MOUVEMENTS_PAIE.Matricule, EMPLOYES.NomEmploye, CODE_DIRECTION.LibDirection, CODE_EQUIPE.LibEquipe
+order by MOUVEMENTS_PAIE.Matricule
+
+
+
+--- Pointage anticipé des cadres supérieurs ---
+
+Dans le fichier config/constante, ajouter ceci :
+
+ 'dateMaximumPointage' => date('Y-m-d', strtotime("+ 6 day"))   // 
+
+
+Dans la classe PointageController, fonction store()
+
+ if ($config != 'no' &&  in_array($request->input('pointagedate'), Pointage::dateVerificationEquipeNonPointee(config('constantes.dateMaximumPointage'), $config->Valeur))) {}
+
+
+Dans la classe PointageController, fonction index()
+
+
+       return view('pointages.index')->with([
+            'pointages' => Pointage::query()->OrderBy('Date_Pointage', 'desc')->paginate(),
+            'periodes' => Periode::query()->distinct('Annee_Mois')->get(),
+            'min' => Pointage::dateVerificationEquipeNonPointee(date('Y-m-d'), $config->Valeur)[$config->Valeur - 1],
+             // 'max' => date('Y-m-d'),
+            'max' => config('constantes.dateMaximumPointage'),
+            'formatter' => new \NumberFormatter("ru-RU", \NumberFormatter::DECIMAL)
+        ]);
+
+
+
+---- Requête pour bénéficiaire sucre : Mandevo ( comptabilité ) -----
+
+SELECT 
+  EMPLOYES.Matricule,
+  EMPLOYES.NomEmploye AS "Nom & Postom",
+  CODE_CONTRAT.LibContrat AS "Contrat",
+  CODE_DIRECTION.LibDirection as "Direction" 
+FROM 
+EMPLOYES join CODE_DIRECTION on EMPLOYES.IDDirection = CODE_DIRECTION.IDDirection
+join CODE_CONTRAT on EMPLOYES.IDContrat = CODE_CONTRAT.IDContrat
+WHERE
+EMPLOYES.Matricule in  (' 86225',
+'122934',
+' 70441',
+' 79307')
+
+
+---------------------- Requête pour bénéficiaire sucre :  Suzy (Commercial ) ------------------------
+
+SELECT 
+  CODE_DIRECTION.LibDirAbrege,
+  CODE_CONTRAT.LibContrat ,
+  count(EMPLOYES.Matricule) 
+FROM 
+  CODE_CONTRAT JOIN EMPLOYES ON CODE_CONTRAT.IDContrat = EMPLOYES.IDContrat,
+  CODE_DIRECTION JOIN EMPLOYES ON CODE_DIRECTION.IDDirection = EMPLOYES.IDDirection
+WHERE
+  EMPLOYES.Matricule in (' 82230',
+' 84742',
+'137555',
+'124083')
+group by CODE_DIRECTION.LibDirAbrege,
+  CODE_CONTRAT.LibContrat
+
+
+=====   employé  saisie dans web ===
+
+SELECT employes."Matricule", concat(employes."Nom",'  ', employes."Postnom") as "Nom employé", grades."Libelle_Abrege" as "Grade", 
+equipes."Code" as "Equipe", fonctions."Code" as "Emploi", contrat_de_travails."Date_Debut_Contrat" as "Date début", 
+contrat_de_travails."Date_Fin_Contrat" as "Date fin"
+from employes 
+join contrat_de_travails on contrat_de_travails.employe_id = employes.id
+join grades on grades.id = contrat_de_travails.grade_id
+join employe_equipe on employe_equipe.employe_id = employes.id
+join equipes on equipes.id = employe_equipe.equipe_id
+join employe_fonction on employe_fonction.employe_id = employes.id
+join fonctions on fonctions.id = employe_fonction.fonction_id
+where employes."Matricule" in ('137068','137074','137076','137150','137093','137067','137069','137071','137075','137070','137087','137149','137151','137086','137083','137081','137147','137085','137152','137088','137080','137079',
+'137094','137146','137057','137090','137157','137056','137143','137058','137051','137060','137054','137141','137142','1327142','137065','137062','137061','137052','137082','137095','137073','137145','137158','137098','137092')
+'137154','137072','137066','137077','137084','137133','137140','137156','137121', '137110', '137123', '137113','137127)
+
+
+
+------- Sélectionner les employés avec les directions et les équipes  ------------
+
+SELECT EMPLOYES.Matricule, CODE_DIRECTION.LibDirection,
+CODE_EQUIPE.LibEquipe
+from EMPLOYES
+join CODE_DIRECTION ON EMPLOYES.IDDirection = CODE_DIRECTION.IDDirection
+join CODE_EQUIPE on EMPLOYES.IDEquipe = CODE_EQUIPE.IDEquipe
+join CODE_EQUIPE on EMPLOYES.IDSousEquipe = CODE_EQUIPE.IDSousEquipe
+where EMPLOYES.Matricule in ('   523',
+'   618',
+'   844',
+'   917',
+' 65923',
+'100880',
+'100881',
+'100882',
+'100885',
+'137224',
+'137225')
+order by CODE_DIRECTION.LibDirection,
+CODE_EQUIPE.LibEquipe
+
+
+
+--------- Les membres actifs du cercle carrière  ---------------------------
+
+
+SELECT 
+  distinct(EMPLOYES.Matricule),
+  EMPLOYES.NomEmploye,
+  CODE_CONTRAT.LibContrat,
+  CODE_EQUIPE.LibEquipe,
+  CODE_CATEGORIE_GRADE.LibCategorieGrade,
+  EMPLOYES.DateFinContrat,
+  code_direction.LibDirection 
+FROM 
+  EMPLOYES JOIN MOUVEMENTS_PAIE ON EMPLOYES.Matricule = MOUVEMENTS_PAIE.Matricule,
+  EMPLOYES JOIN CODE_EQUIPE ON EMPLOYES.Equipe_SousEquipe = CODE_EQUIPE.Equipe_SousEquipe,
+  EMPLOYES JOIN CODE_CONTRAT ON EMPLOYES.IDContrat = CODE_CONTRAT.IDContrat,
+  EMPLOYES JOIN CODE_CATEGORIE_GRADE ON EMPLOYES.IDCategorieGrade = CODE_CATEGORIE_GRADE.IDCategorieGrade,
+  EMPLOYES JOIN CODE_DIRECTION ON EMPLOYES.IDDIRECTION = CODE_DIRECTION.IDDIRECTION
+WHERE
+  EMPLOYES.IDFinActivite = '0'
+  AND MOUVEMENTS_PAIE.IDRubrique = '1482'
+order by  CODE_CATEGORIE_GRADE.LibCategorieGrade DESC
+
+
+
+------------ Les membres actifs du cercle caroli  -----------------------------
+
+
+SELECT 
+  distinct(EMPLOYES.Matricule),
+  EMPLOYES.NomEmploye,
+  CODE_CONTRAT.LibContrat,
+  CODE_EQUIPE.LibEquipe,
+  CODE_CATEGORIE_GRADE.LibCategorieGrade,
+  EMPLOYES.DateFinContrat 
+FROM 
+  EMPLOYES JOIN MOUVEMENTS_PAIE ON EMPLOYES.Matricule = MOUVEMENTS_PAIE.Matricule,
+  EMPLOYES JOIN CODE_EQUIPE ON EMPLOYES.Equipe_SousEquipe = CODE_EQUIPE.Equipe_SousEquipe,
+  EMPLOYES JOIN CODE_CONTRAT ON EMPLOYES.IDContrat = CODE_CONTRAT.IDContrat,
+  EMPLOYES JOIN CODE_CATEGORIE_GRADE ON EMPLOYES.IDCategorieGrade = CODE_CATEGORIE_GRADE.IDCategorieGrade
+WHERE
+  EMPLOYES.IDFinActivite = '0'
+  AND MOUVEMENTS_PAIE.IDRubrique = '1405'
+
+
+
+------------------- Les employés et leurs absences -------------------------------
+
+SELECT D_POINTAGE_DECADAIRE.matricule, count(D_POINTAGE_DECADAIRE.idpointage) as "Nombre d'absence", STRING_AGG(D_POINTAGE_DECADAIRE.idpointage, ';') as Details FROM [D_POINTAGE_DECADAIRE] WHERE (Matricule in ('137825',
+'138172',
+'137879',
+'138728',
+'138070',
+'139016'
+)) AND(DatePointage>='20250621'  AND  DatePointage<='20250720') AND
+(IDPointage in ('01', '02', '06')) 
+group by D_POINTAGE_DECADAIRE.matricule
+
+
+
+
+----------------- Requête pour les jours de la cnss -----------------------
+
+SELECT
+    T.Matricule,   
+    CASE
+        WHEN CEIL(T.TotalPointage) > 26 THEN 26
+        ELSE CEIL(T.TotalPointage)
+    END AS PointageAjuste
+FROM
+(
+    SELECT
+        E_RESULTATS_PAIE.Matricule,
+        SUM(D_RESULTATS_PAIE.Pointage) AS TotalPointage
+    FROM E_RESULTATS_PAIE
+    INNER JOIN D_RESULTATS_PAIE
+        ON E_RESULTATS_PAIE.Matricule_Date_Heure_TypePaie =
+           D_RESULTATS_PAIE.Matricule_Date_Heure_TypePaie
+    WHERE E_RESULTATS_PAIE.AnneeMoisPaie = '202607'
+      AND D_RESULTATS_PAIE.IDRubrique IN
+      ('1101','1102','1103','1104','1105','1106','1107',
+       '1109','1110','1119','1120','1121')
+    GROUP BY E_RESULTATS_PAIE.Matricule
+) T
+
+
+-------- Requête pour IPR pour CNSS -------
+
+ 		SELECT
+                    E_RESULTATS_PAIE.Matricule,
+                    D_RESULTATS_PAIE.IDtypePaie,
+                    SUM(D_RESULTATS_PAIE.MontantPaie) AS Ipr
+                FROM E_RESULTATS_PAIE
+                INNER JOIN D_RESULTATS_PAIE
+                    ON E_RESULTATS_PAIE.Matricule_Date_Heure_TypePaie =
+                    D_RESULTATS_PAIE.Matricule_Date_Heure_TypePaie
+                WHERE E_RESULTATS_PAIE.AnneeMoisPaie = '202607'
+                AND D_RESULTATS_PAIE.IDRubrique =
+                '1570'
+                GROUP BY E_RESULTATS_PAIE.Matricule, D_RESULTATS_PAIE.IDtypePaie
+
+
+---------------- Sucre Jean Mandevo --------------------------------------
+
+select employes.Matricule, employes.NomEmploye, CODE_DIRECTION.LibDirection, CODE_CONTRAT.LibContrat
+from
+employes inner join CODE_DIRECTION on employes.IDDirection = CODE_DIRECTION.IDDirection,
+EMPLOYES inner join CODE_CONTRAT on employes.IDContrat = CODE_CONTRAT.IDContrat
+where employes.Matricule in ('134433',
+'137410',
+'137421',
+'137491',
+'139454'
+)
+
+
+--------------- COPIE DES EMPLOYES WINDEC VERS POSTGRES -------------
+
+
+Route::get('copie_employe', [\App\Http\Controllers\AdresseController::class, 'copieHfsqlPourPostGres']);
+
+
+
+--------------- MODIFIER GRADE EMPLOYE -------------------------------
+
+Route::get('copie25', function() {
+
+   // Variables fournies
+
+    $employe_id_cible = DB::table('employes')
+        ->where('Matricule', 139859)
+        ->value('id'); // Retourne l'ID ou null si non trouvé.
+    $grade_id = 8;
+
+// 1. CONSTRUCTION DE LA NOUVELLE TERMINAISON ($emp) À PARTIR DE $grade_id
+
+// Exemple : 8 devient '08', 12 reste '12'.
+    $emp = sprintf('%02d', $grade_id); // Résultat : '08'
+
+// La variable $emp doit être échappée pour la requête DB::raw() car elle est injectée comme une chaîne littérale.
+// DB::getPdo()->quote() est la méthode la plus sûre, mais une simple
+
+    $emp_echappe = DB::getPdo()->quote($emp); // Par exemple, '08' devient "'08'"
+
+// 2. EXÉCUTION DE LA MISE À JOUR
+
+    DB::table('employe_grade')
+        ->where('employe_id', $employe_id_cible)
+        ->update([
+            'grade_id' => $grade_id,
+            'Controle_Unique' => DB::raw("CONCAT(SUBSTRING(\"Controle_Unique\", 1, LENGTH(\"Controle_Unique\") - 2), $emp_echappe)")
+    ]);
+
+    DB::table('contrat_de_travails')
+        ->where('employe_id', $employe_id_cible)->update([
+            'grade_id' => $grade_id
+    ]);
+
+});
+
+
+------- Modification pointage  web ---------
+
+Route::get('editPointage', function () {
+       /* Modification pointage */
+       DB::table('details')
+        ->where('employe_id', 1623)
+        ->where('code_pointage_reconstruit_id', 5733)
+        ->whereDate('Date_Pointage', '2026-01-22')
+        ->update([
+            'code_pointage_reconstruit_id' => 5726
+        ]);
+       dd('ok');
+});
+
+
+------- Suppression pointage web --------
+
+Route::get('supprimerPointage', function () {
+       /* supression pointage */
+         $liste_employes = [
+       
+        '141174',
+        '141176'
+    ];
+    $sortie = [];
+    foreach ($liste_employes as $employe) {
+         DB::table('details')
+            ->where('employe_id', DB::table('employes')->where('Matricule',$employe)->first()->id)
+            ->whereBetween('Date_Pointage', [
+                '2026-05-21', '2026-05-22'
+            ])
+            ->delete();
+        $sortie[] = $employe;
+    }
+    dd($sortie);
+
+    });
+
+
+------ Prorogation employé ------
+
+Route::get('prorogation', function () {
+    $employes = DB::table('employes')->whereIn('Matricule', [
+        '139079',        
+        '139144','137607'
+    ])->get();  
+
+     $contrat = [];
+
+    foreach ($employes as $employe)
+    {
+        $contrat[] = DB::table('contrat_de_travails')->where('employe_id', $employe->id)
+            ->update(['Date_Fin_Contrat' => '20260228']);
+    }
+    dd($contrat);
+});
+
+
+
+------ Activation employé dans le Web----------
+
+Route::get('activation', function () {
+    //$emp = DB::table('employes')->where('Matricule', '83251')->value('id');
+    //$cont = DB::table('contrat_de_travails')->where('employe_id', $emp)->get();
+
+    $employes = DB::table('employes')->whereIn('Matricule', [
+        "139842"
+    ])->where('Est_Actif', false)->get();
+
+    //dd($employes);
+
+    $fonction = []; $equipe = []; $grade = []; $contrat = []; $employeNew = [];
+
+   foreach ($employes as $employe)
+    {
+        $employeNew[] = DB::table('employes')->where('id', $employe->id)->update(['Est_Actif' => true]);
+        $fonction[] = DB::table('employe_fonction')->where('employe_id', $employe->id)->update(['Est_Actif' => true]);
+        $equipe[] = DB::table('employe_equipe')->where('employe_id', $employe->id)->update(['Est_Actif' => true]);
+        $grade[] = DB::table('employe_grade')->where('employe_id', $employe->id)->update(['Est_Actif' => true]);
+        $contrat[] = DB::table('contrat_de_travails')->where('employe_id', $employe->id)
+            ->update(['fin_activite_id' => null, 'Est_Actif' => true, 'Date_Fin_Contrat' => '20261009']);
+    }
+    dd($employeNew,  $fonction, $fonction, $equipe, $grade, $contrat);
+});
+
+
+------ Désactivation Employé -------
+
+Route::get('desactivation', function () {
+    $contrat = DB::table('contrat_de_travails')->where('Matricule', '137635')->first();
+    dd($contrat);
+    $employes = DB::table('employes')->whereIn('Matricule', [
+        '137635'
+    ])->where('Est_Actif', false)->get();
+
+    $fonction = []; $equipe = []; $grade = []; $contrat = []; $employeNew = [];
+
+    foreach ($employes as $employe)
+    {
+        $employeNew[] = DB::table('employes')->where('id', $employe->id)->update(['Est_Actif' => false]);
+        $fonction[] = DB::table('employe_fonction')->where('employe_id', $employe->id)->update(['Est_Actif' => false]);
+        $equipe[] = DB::table('employe_equipe')->where('employe_id', $employe->id)->update(['Est_Actif' => false]);
+        $grade[] = DB::table('employe_grade')->where('employe_id', $employe->id)->update(['Est_Actif' => false]);
+        $contrat[] = DB::table('contrat_de_travails')->where('employe_id', $employe->id)
+            ->update(['fin_activite_id' => 5, 'Est_Actif' => false, 'Date_Fin_Contrat' => '20260330']);
+    }
+    dd($employeNew,  $fonction, $fonction, $equipe, $grade, $contrat);
+});
+
+
+------  Rétrograde dans Web ----------
+
+DB::table('employe_grade')->where('employe_id', DB::table('employes')->where('Matricule', '140144')->value('id'))
+        ->update(['grade_id' => 7, 'Controle_Unique' => '140144|00107'])
+
+
+
+------ Récupération Paie d'une direction par rapport à la période Paie ( PersonnelPaie ) -----
+
+SELECT 
+  D_RESULTATS_PAIE.Matricule,
+  EMPLOYES.NomEmploye,
+  CODE_GRADE.LibGradeAbrege,
+  CODE_TYPE_PAIE.LibTypePaie,
+  CODE_DIRECTION.IDDirection,
+  E_RESULTATS_PAIE.AnneeMoisPaie,
+  D_RESULTATS_PAIE.IDRubrique,
+  CODE_RUBRIQUE_PAIE.LibRubrique,
+  D_RESULTATS_PAIE.Pointage,
+  D_RESULTATS_PAIE.MontantPaie 
+FROM 
+  CODE_RUBRIQUE_PAIE JOIN D_RESULTATS_PAIE ON CODE_RUBRIQUE_PAIE.IDRubrique = D_RESULTATS_PAIE.IDRubrique,
+  E_RESULTATS_PAIE JOIN D_RESULTATS_PAIE ON E_RESULTATS_PAIE.Matricule_Date_Heure_TypePaie = D_RESULTATS_PAIE.Matricule_Date_Heure_TypePaie,
+  E_RESULTATS_PAIE JOIN EMPLOYES ON E_RESULTATS_PAIE.Matricule = EMPLOYES.Matricule,
+  CODE_GRADE JOIN EMPLOYES ON CODE_GRADE.IDGrade = EMPLOYES.IDGrade,
+  CODE_DIRECTION JOIN EMPLOYES ON CODE_DIRECTION.IDDirection = EMPLOYES.IDDirection,
+  E_RESULTATS_PAIE JOIN CODE_TYPE_PAIE ON E_RESULTATS_PAIE.IDTypePaie = CODE_TYPE_PAIE.IDTypePaie
+WHERE  
+  E_RESULTATS_PAIE.AnneeMoisPaie = '202606'
+  AND CODE_DIRECTION.IDDirection = '06'
+order by CODE_TYPE_PAIE.LibTypePaie, D_RESULTATS_PAIE.Matricule
+
+
+
+---------- Mis à jour des pointages coupes dans la table POINTAGE_JOURNALIERS -----------
+
+soit l est un entier =1
+POUR TOUTE LIGNE DE TableImport
+
+	HLitRecherchePremier(POINTAGE_JOURNALIERS,Equipe_Matricule_Date,[TableImport.Colonne1,TableImport.Colonne2,TableImport.Colonne3])	
+	SI HTrouve(POINTAGE_JOURNALIERS) ALORS
+		
+		POINTAGE_JOURNALIERS.IDTacheJ			= TableImport.Colonne4
+		POINTAGE_JOURNALIERS.TacheRealisee			= TableImport.Colonne5
+		
+		HModifie(POINTAGE_JOURNALIERS)		
+		
+		Trace("Trouvé ", TableImport.Colonne1,TableImport.Colonne2,TableImport.Colonne3, " ", l)
+		
+	SINON		
+		Trace("Erreur" )	
+		
+	FIN
+	l++
+FIN	
+
+
+
