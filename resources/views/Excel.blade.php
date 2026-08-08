@@ -22,8 +22,12 @@
             <a class="btn" id="mis_a_jr" onclick="ouvrirModal('{{ route('misAJourPointageCoupe') }}', 'Mis à jour pointage coupe')">Mis à jour</a>    
                   
             <a class="btn" onclick="ouvrirModal('{{ route('pointageManquant')}}', 'Pointage manquant')">Pointage manquant</a>
-            <a class="btn" href="{{ route('fichierCnss')}}">Fichier Cnss</a>
-            <input type="month">
+            
+            <form action="{{ route('fichierCnss')}}" method="GET" style="display: inline">            
+                <button type="submit">Fichier cnss</button>
+                <input type="month" name="anneeMois" required>
+            </form>
+           {{--  <a class="btn" href="{{ route('fichierCnss')}}">Fichier Cnss</a> --}}             
             
         </div>
         

@@ -17,7 +17,7 @@ Route::get('/excel', function () {
 })->name('excel');
 
 
-Route::get('/import', [importController::class, 'fichierCnss'])->name('fichierCnss');
+Route::get('/import-fichier-cnss', [importController::class, 'fichierCnss'])->name('fichierCnss');
 Route::get('/update', [importController::class, 'updateHS'])->name('updateHS');
 Route::get('/insert', [importController::class, 'insertHS'])->name('insertHS');
 Route::get('/jour', [importController::class, 'iprCnn'])->name('iprCnn');
@@ -26,5 +26,5 @@ Route::get('/somme', [importController::class, 'sommerTypepaie'])->name('sommerT
 
 
 Route::get('/exportation_pointage_en_excel', [PointageCoupeController::class, 'genererFichierPointageCoupe'])->name('genererFichierPointageCoupe');
-Route::get('/mis_a_jour_pointage', [PointageCoupeController::class, 'misAJourPointageCoupe'])->name('misAJourPointageCoupe');
+Route::get('/mis_a_jour_pointage_coupe', [PointageCoupeController::class, 'misAJourPointageCoupe'])->name('misAJourPointageCoupe');
 Route::get('/pointage_manquant', [PointageCoupeController::class, 'pointageManquant'])->name('pointageManquant');

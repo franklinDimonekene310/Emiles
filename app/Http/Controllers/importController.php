@@ -6,27 +6,37 @@ use Rap2hpoutre\FastExcel\FastExcel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use Carbon\Carbon;
 use DB;
 
 use Illuminate\Http\Request;
 
 class importController extends Controller
 {
-    //
-    public function fichierCnss()
-    {
+    
+    public function fichierCnss(Request $request)
+    {       
         // ROLE : produire un fichier excel contenant des informations à envoyer à la CNSS pour une paie donnée
-        //$path = 'C:\Users\B.NIMI\Desktop\DIVERS\COTISATION CNSS.xlsx';   
-         $path = public_path('COTISATION CNSS - Juillet26.xlsx');
-        //$collection = (new FastExcel)->sheet(4)->import($path);    
+        // $path = 'C:\Users\B.NIMI\Desktop\DIVERS\COTISATION CNSS.xlsx';   
+        $path = public_path('COTISATION CNSS - Juillet26.xlsx');        
         
-        // dd($path, file_exists($path), is_file($path), is_readable($path));
+        if (!file_exists($path) || !is_file($path) || !is_readable($path)) {
+            return redirect()->back()->with('Erreur', 'Fichier Invalide.');
+        }
 
-        $privileges = (new FastExcel)->sheet(3)->import($path);
-       
-        $jourCnn = $this->jourCnn();        
-        $iprCnn = $this->iprCnn();       
+        if (!$request->anneeMois) {
+            return redirect()->back()->with('Erreur', 'Année mois invalide.');
+        }
+
+        $anneeMois = str_replace('-', '',$request->anneeMois);
         
+        $debutMoisAnnee = Carbon::parse($anneeMois.'01')->format('d/m/Y');        
+
+        $jourCnn = $this->jourCnn($anneeMois);        
+        $iprCnn = $this->iprCnn($anneeMois); 
+
+        $privileges = (new FastExcel)->sheet(3)->import($path);    
+                  
         $cnn = [];
         $nomBrut = [];
       
@@ -42,9 +52,9 @@ class importController extends Controller
                 'Prenom' =>  $nomBrut['prenom'],
                 'Type travailleur(1=Travailleur , 2=Assimile)' => '',
                 'Commune  ou Territoire affectation' => (trim($privilege['LIBELLE SITE']) === 'KWILU-NGONGO') ? "MBANZA-NGUNGU" : "GOMBE",
-                'Période Cotisee (jj/mm/aaaa)' => '01/07/2026',
+                'Période Cotisee (jj/mm/aaaa)' => $debutMoisAnnee,
                 'Montant Cotise' => $privilege['COTISATION INSS'],
-                'Nbre De Jours de travail' => $privilege['TypePaie'] != '06' ? ($jourCnn[$privilege['Matricule']] ?? null) : null,
+                'Nbre De Jours de travail' => $privilege['TypePaie'] != '06' ? ($jourCnn[$privilege['Matricule']] ?? 0) : 0,
                 'Nbre De heure de travail' => "",
                 'Montant Brut Imposable' => $privilege['BRUT INSS'],
                 'ALLOC FAM' => $privilege['ALLOC FAM'],
@@ -53,7 +63,7 @@ class importController extends Controller
             ];            
         }
 
-           $cnn = $this->sommerTypepaie($cnn); 
+            $cnn = $this->sommerTypepaie($cnn); 
        
             // Mise en forme avec phpSpread
             $spreadsheet = new Spreadsheet();           
@@ -66,7 +76,7 @@ class importController extends Controller
             ->setName('Arial')
             ->setSize(10);
 
-            // Écriture des données
+           // Écriture des données
            $data = $cnn->toArray();
 
             if (!empty($data)) {
@@ -124,8 +134,8 @@ class importController extends Controller
             return $resultat;            
     }
 
-    private function jourCnn() {
-        
+    private function jourCnn($anneeMois) {
+                  
                $sql = "
                 SELECT
                     T.Matricule,
@@ -142,19 +152,20 @@ class importController extends Controller
                     INNER JOIN D_RESULTATS_PAIE
                         ON E_RESULTATS_PAIE.Matricule_Date_Heure_TypePaie =
                         D_RESULTATS_PAIE.Matricule_Date_Heure_TypePaie
-                    WHERE E_RESULTATS_PAIE.AnneeMoisPaie = '202607'
+                    WHERE E_RESULTATS_PAIE.AnneeMoisPaie = '". $anneeMois. "'
                     AND D_RESULTATS_PAIE.IDRubrique IN
                     ('1101','1102','1103','1104','1105','1106','1107',
                     '1109','1110','1119','1120','1121')
                     GROUP BY E_RESULTATS_PAIE.Matricule
                 ) T
                 ";    
-
+            
             return collect(DB::connection('hfsql_personnel')->select($sql))->pluck('PointageAjuste','Matricule');               
+                         
     }
 
     
-    private function iprCnn() {
+    private function iprCnn($anneeMois) {
         
                $sql = "
                 SELECT
@@ -165,13 +176,13 @@ class importController extends Controller
                 INNER JOIN D_RESULTATS_PAIE
                     ON E_RESULTATS_PAIE.Matricule_Date_Heure_TypePaie =
                     D_RESULTATS_PAIE.Matricule_Date_Heure_TypePaie
-                WHERE E_RESULTATS_PAIE.AnneeMoisPaie = '202607'
+                WHERE E_RESULTATS_PAIE.AnneeMoisPaie = '". $anneeMois ."'
                 AND D_RESULTATS_PAIE.IDRubrique =
                 '1570'
                 GROUP BY E_RESULTATS_PAIE.Matricule, D_RESULTATS_PAIE.IDtypePaie
                 ";    
             $resultats = DB::connection('hfsql_personnel')->select($sql);
-            //  AND E_RESULTATS_PAIE.Matricule IN ('   523', '   539', '   714', ' 75381', ' 79345', '129091')
+           
             $datas = [];
 
             foreach($resultats as $data) {

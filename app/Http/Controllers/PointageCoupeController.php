@@ -114,8 +114,8 @@ class PointageCoupeController extends Controller
         $fichierDeBase = $this->genererTableauDeBase($request);  
         
         // Code à améloirer 
-           $dateDebutDecade = Carbon::parse($request->debutDecade)->format('dmY');                      
-          // dd($dateDebutDecade, $dateFinDecade );
+        $dateDebutDecade = Carbon::parse($request->debutDecade)->format('dmY');                      
+        
         ////////
        
         $spreadsheet = new Spreadsheet();
