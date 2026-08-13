@@ -68,7 +68,9 @@ class PointageCoupeController extends Controller
                 )                
                 //->where('IDGrade','>','15')  // Cadre sup
                 //->where('IDGrade','=','01')    // Coupeur
-                //->where('IDDirection', '<>', '05')     // Agronomique
+                //->where('IDGrade','<>','01')    // Pas des Coupeur
+                //->where('IDDirection', '<>', '05')     // Autres
+                //->where('IDDirection', '=', '05')     // Agronomie
                 ->where('IDFinActivite', '0')
                 ->where('DateEngagement', '<=', $date)
                 ->whereNotIn('Matricule', function ($query) use ($date) {
@@ -76,6 +78,7 @@ class PointageCoupeController extends Controller
                         ->select('Matricule')
                         ->where('DatePointage', $date);
                 })
+                ->whereIn('Matricule', ['129091', '142079', '128524'])
                 ->whereNotIn('Matricule', [
                     '114396',
                     '131627',
@@ -85,7 +88,7 @@ class PointageCoupeController extends Controller
                     '137731',
                     '131669'
                 ])
-                ->whereIn('Matricule', ['139818','139815', '139816', '139814', '139817', '139813', ' 86300', '140193', '129091'])
+                //->whereIn('Matricule', ['139818','139815', '139816', '139814', '139817', '139813', ' 86300', '140193', '129091'])
                 ->orderBy('Matricule')                
                 //->orderBy('IDDirection')                
                 ->get();
@@ -153,7 +156,7 @@ class PointageCoupeController extends Controller
         }
       
         $writer = new Xlsx($spreadsheet);
-        $writer->save(storage_path('app/PointageDecadaire.xlsx')); 
+        $writer->save(public_path('PointageDecadaireCoupe.xlsx')); 
       
         return redirect()->back()->with('success', 'Fichier Excel généré avec succès.');
     }
@@ -291,7 +294,7 @@ class PointageCoupeController extends Controller
         return $fichierDeBase;
     }
 
-    private function validationDate(Request $request) {
+    public function validationDate(Request $request) {
         $request->validate(
                 [
                     'debutDecade' => ['required', 'date'],

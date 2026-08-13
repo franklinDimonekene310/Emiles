@@ -1,3 +1,6 @@
+@php
+    $absencesParEmploye = $absencesParEmploye ?? [];
+@endphp
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -7,12 +10,10 @@
     <link rel="stylesheet" href="{{asset('style.css')}}" type="text/css">    
 </head>
 <body>
-        <h1>Opérations sur </h1>    
-        
+        <h1>Opérations sur </h1> 
         
             {{--<a class="btn" href="{{ route('import')}}">Cliquer</a> --}} 
-        <div id="div-modal">
-           
+        <div id="div-modal">           
         
             <a class="btn" href="{{ route('updateHS') }}" >Update heure</a>    
         
@@ -23,11 +24,12 @@
                   
             <a class="btn" onclick="ouvrirModal('{{ route('pointageManquant')}}', 'Pointage manquant')">Pointage manquant</a>
             
-            <form action="{{ route('fichierCnss')}}" method="GET" style="display: inline">            
+            <form action="{{ route('fichierCnss') }}" method="GET" style="display: inline">            
                 <button type="submit">Fichier cnss</button>
                 <input type="month" name="anneeMois" required>
             </form>
-           {{--  <a class="btn" href="{{ route('fichierCnss')}}">Fichier Cnss</a> --}}             
+
+            <a class="btn" onclick="ouvrirModal('{{ route('afficherToutesLesAbsences')}}', 'Pointage manquant')">Pointage manquant</a>          
             
         </div>
         
@@ -39,23 +41,25 @@
                         <th>Date</th>                                           
                     </tr>
                 </thead>
-                <tbody>
-                   
-                    {{-- @forelse($datePointageManquant as $matr_nom_direction => $dates)
-                   
-                    <tr>
-                        <td>{{ $matr_nom_direction }}</td>
-                        <td>
-                            @foreach($dates as $date)
-                                {{ $date['Date'] }}<br>
-                            @endforeach
-                        </td>                        
-                    </tr>
+                <tbody>                   
+                    @forelse($absencesParEmploye as $matr_nom_direction => $dates)                   
+                        <tr>
+                            <td>{{ $matr_nom_direction }}</td>
+                            <td>
+                                <table>
+                                     @foreach($dates as $date)                                        
+                                        <tr>
+                                            <td>{{ $date }}</td>
+                                        </tr>
+                                     @endforeach
+                                </table>                               
+                            </td>                        
+                        </tr>
                     @empty
-                    <tr>
-                        <td colspan="2"><em>Aucune !</em></td>
-                    </tr>
-                    @endforelse--}}
+                        <tr>
+                            <td colspan="2"><em>Aucune !</em></td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -73,8 +77,16 @@
 
 
                             <label for="finDecade">au</label>                
-                            <input type="date" id="finDecade" name="finDecade" value="{{ old('finDecade') }}">
-                          
+                            <input type="date" id="finDecade" name="finDecade" value="{{ old('finDecade') }}">                           
+                        </div>
+
+                        <div>
+                            <label for="direction">Direction</label>                
+                            <select name="" id="">                                
+                                <option value="">Tous</option>
+                                <option value="05">Diragro</option>
+                                <option value="09">Finance</option>
+                            </select>
                         </div>
                         <p>
                             @error('finDecade')

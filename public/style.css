@@ -301,7 +301,7 @@ hr {
 
 table {
   border-collapse: collapse;
-  width: 25%;
+  width: max-content;
 }
 
 table, td, th {
@@ -310,19 +310,19 @@ table, td, th {
 
 th, td { 
   text-align: center;
+  padding: 3px 5px;
 }
 
 th {
-  background-color: #b6e2fc70;  
-  padding: 5px;
+  background-color: #b6e2fc70;    
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   font-size: small;
 }
 
-td {
+/* td {
   padding: 3px;
   font-family: 'Times New Roman', Times, serif;
-}
+} */
 
 tr:nth-child(even) {background-color: #f2f2f2;}
 tr:hover {background-color: rgba(223, 133, 100, .8); cursor: pointeur;}
