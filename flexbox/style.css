@@ -1,0 +1,41 @@
+.container {
+    border: 1px solid rgba(52,73,94,.25);
+    background-color: rgba(52,73,94,.1);
+    height: 800px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+div {
+    display: block;
+}
+
+.item {
+    width: 50px;
+    height: 55px;
+    text-align: center;
+    color: white;
+    padding-top: 5px;
+}
+
+.item-1 {
+    background-color: turquoise;
+}
+
+.item-2 {
+    background-color: blue;
+}
+
+.item-3 {
+    background-color: orange;
+}
+
+.item-4 {
+    background-color: rgb(168, 168, 18);
+}
+
+.item-5 {
+    background-color: red;
+}

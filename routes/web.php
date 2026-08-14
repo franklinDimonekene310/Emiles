@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\importController;
 use App\Http\Controllers\PointageCoupeController;
 use App\Http\Controllers\PointageManquantController;
+use App\Http\Controllers\FichierFlorentController;
 
 
 Route::get('/', function () {
@@ -33,3 +34,6 @@ Route::get('/pointage_manquant', [PointageCoupeController::class, 'pointageManqu
 // Pointage Manquant
 Route::get('/afficher-toutes-les-absences', [PointageManquantController::class, 'afficherToutesLesAbsences'])
 ->name('afficherToutesLesAbsences');
+
+
+Route::get('/fichier', [FichierFlorentController::class, 'salaireJournAgri'])->name('salaireJournAgri');

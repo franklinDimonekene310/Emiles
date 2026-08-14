@@ -43,6 +43,7 @@ class PointageManquantController extends Controller
                     ) AS Matricule,
                     ? AS Date
                 ", [$date])
+                ->where('IDDirection', '=', '05')
                 ->where('IDFinActivite', '0')
                 ->where('DateEngagement', '<=', $date)
                 ->whereNotIn('Matricule', function ($query) use ($date) {
@@ -50,7 +51,7 @@ class PointageManquantController extends Controller
                         ->select('Matricule')
                         ->where('DatePointage', $date);
                 })
-                ->whereIn('Matricule', ['129091', '142079', '128524'])
+                //->whereIn('Matricule', ['129091', '142079', '128524'])
                 ->whereNotIn('Matricule', $this->lesExceptions)
                 ->get();
                 
@@ -59,7 +60,7 @@ class PointageManquantController extends Controller
                          Carbon::createFromFormat('Ymd', $employe->DATE)->format('d-m-Y');
                 }
             }            
-
+            dd($absencesParEmploye);
             return view('Excel', compact('absencesParEmploye'));
     }
 
@@ -84,7 +85,7 @@ class PointageManquantController extends Controller
                     ) AS Matricule,
                     ? AS Date
                 ", [$date])
-                ->where('IIDirection', '=', '05')
+                ->where('IDDirection', '=', '05')
                 ->where('IDFinActivite', '0')
                 ->where('DateEngagement', '<=', $date)
                 ->whereNotIn('Matricule', function ($query) use ($date) {

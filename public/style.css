@@ -102,7 +102,7 @@ button:hover {
 
 /* The Modal ( background ) */
 .modal {
-  display: none; /* Hidden by default */
+  display: block; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 100; /* Sit on top */
   inset: 0;
@@ -295,9 +295,6 @@ hr {
 }
 
 
-/*=======================================
-         MIS EN FORME DE LA TABLE
-=========================================*/
 
 table {
   border-collapse: collapse;
@@ -319,12 +316,37 @@ th {
   font-size: small;
 }
 
-/* td {
-  padding: 3px;
-  font-family: 'Times New Roman', Times, serif;
-} */
-
 tr:nth-child(even) {background-color: #f2f2f2;}
 tr:hover {background-color: rgba(223, 133, 100, .8); cursor: pointeur;}
 
+
+/*=======================================
+         MIS EN FORME DE SELECT
+=========================================*/
+
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex-grow: 1;
+}
+
+.champ label {
+  text-align: justify;
+  padding-left: inherit;
+  margin-top: 20px;
+  font-size: medium;
+}
+
+.champ select {
+    padding: 5px;
+    width: stretch;
+    cursor: pointer;
+}
+
+.filter {
+  display: flex;  
+  margin-top: 20px;
+  gap: 5px;
+}
 

@@ -22,7 +22,7 @@
             <a class="btn" id="pointage_excel" onclick="ouvrirModal('{{ route('genererFichierPointageCoupe') }}', 'Fichier Excel pointage coupe')">Exportation Pointage coupe</a>
             <a class="btn" id="mis_a_jr" onclick="ouvrirModal('{{ route('misAJourPointageCoupe') }}', 'Mis à jour pointage coupe')">Mis à jour</a>    
                   
-            <a class="btn" onclick="ouvrirModal('{{ route('pointageManquant')}}', 'Pointage manquant')">Pointage manquant</a>
+            {{-- <a class="btn" onclick="ouvrirModal('{{ route('pointageManquant')}}', 'Pointage manquant')">Pointage manquant</a> --}}
             
             <form action="{{ route('fichierCnss') }}" method="GET" style="display: inline">            
                 <button type="submit">Fichier cnss</button>
@@ -57,7 +57,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="2"><em>Aucune !</em></td>
+                            <td colspan="2"><em>Aucune information !</em></td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -71,23 +71,45 @@
                     <div class="container">
                         <h2>Pointage Décadaire</h2>
 
-                        <div>
-                            <label for="debutDecade">Début décade du </label>
-                            <input type="date" id="debutDecade" name="debutDecade" value="{{ old('debutDecade') }}">
+                           <div>
+                                <label for="debutDecade">Début décade du </label>
+                                <input type="date" id="debutDecade" name="debutDecade" value="{{ old('debutDecade') }}">
 
+                                <label for="finDecade">au</label>                
+                                <input type="date" id="finDecade" name="finDecade" value="{{ old('finDecade') }}">                           
+                            </div>
 
-                            <label for="finDecade">au</label>                
-                            <input type="date" id="finDecade" name="finDecade" value="{{ old('finDecade') }}">                           
+                        <div class="filter">
+
+                            <div class="champ">
+                                <label for="direction">Directions</label>                
+                                <select name="direction" id="direction">                                
+                                    <option value="">Tous</option>
+                                    <option value="05">Diragro</option>
+                                    <option value="09">Finance</option>
+                                </select>
+                            </div>
+
+                            <div class="champ">
+                                <label for="contrat">Contrats</label>                
+                                <select name="contrat" id="contrat">                                
+                                    <option value="">Tous</option>
+                                    <option value="0">Permanent</option>
+                                    <option value="1">Saisonnier</option>
+                                </select>
+                            </div>
+                            <div class="champ">
+                                <label for="grade">Grades</label>                
+                                <select name="grade" id="grade" multiple>                                
+                                    <option value="">Tous</option>
+                                    <option value="13">CC1</option>
+                                    <option value="14">CC2</option>
+                                    <option value="15">CC3</option>
+                                    <option value="16">S1</option>
+                                </select>
+                            </div>
                         </div>
 
-                        <div>
-                            <label for="direction">Direction</label>                
-                            <select name="" id="">                                
-                                <option value="">Tous</option>
-                                <option value="05">Diragro</option>
-                                <option value="09">Finance</option>
-                            </select>
-                        </div>
                         <p>
                             @error('finDecade')
                                 <div class="text-danger">
