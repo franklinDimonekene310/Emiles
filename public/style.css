@@ -28,7 +28,6 @@ h1 {
 
 #div-modal {
   padding-bottom: 8px;
-  display: flex;
   gap: 5px;
 }
 
@@ -67,7 +66,6 @@ button {
   margin: 8px 0;
   border: none; 
   cursor: pointer; 
-  width: 100%;
   opacity: 0.9;
   border-radius: 2px; 
   transition: opacity 0.5s ease;
@@ -102,7 +100,7 @@ button:hover {
 
 /* The Modal ( background ) */
 .modal {
-  display: block; /* Hidden by default */
+  display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 100; /* Sit on top */
   inset: 0;
