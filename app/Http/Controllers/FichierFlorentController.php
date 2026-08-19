@@ -145,7 +145,7 @@ class FichierFlorentController extends Controller
 
         $reqDetailsJournAgri = "SELECT 
                 POINTAGE_JOURNALIERS.DatePointage, POINTAGE_JOURNALIERS.IDEquipeJ,
-                POINTAGE_JOURNALIERS.Matricule, JOURNALIERS.NomJournalier,
+                POINTAGE_JOURNALIERS.Matricule, 
                 CASE                    
                     WHEN POINTAGE_JOURNALIERS.IDTacheJ = '20' THEN CONCAT(POINTAGE_JOURNALIERS.IDTacheJ,POINTAGE_JOURNALIERS.TacheRealisee)                    
                     ELSE POINTAGE_JOURNALIERS.IDTacheJ
@@ -154,11 +154,11 @@ class FichierFlorentController extends Controller
                     WHEN POINTAGE_JOURNALIERS.IDTacheJ <> '20' AND POINTAGE_JOURNALIERS.TacheRealisee = '6' THEN 'Pose 6-18'
                     WHEN POINTAGE_JOURNALIERS.IDTacheJ = '20' AND POINTAGE_JOURNALIERS.datepointage IN ('20260802', '20260803', '20260809') THEN 'Dim/Férié'
                     ELSE 'Pose 6-14 ou 7-15'
-                END AS Pose
+                END AS Pose, JOURNALIERS.NomJournalier
                 FROM [POINTAGE_JOURNALIERS] INNER JOIN JOURNALIERS ON POINTAGE_JOURNALIERS.Matricule = JOURNALIERS.Matricule
                 WHERE POINTAGE_JOURNALIERS.IDAnnee = '2026'
                 AND JOURNALIERS.IDAnnee = '2026'
-                AND POINTAGE_JOURNALIERS.IDEquipeJ IN ('14', '22', '23')
+                AND POINTAGE_JOURNALIERS.IDEquipeJ IN ('14', '22', '23', '21', '24', '28', '30', '33', '38' )
                 AND POINTAGE_JOURNALIERS.Matricule LIKE 'JJ%'             
                 AND POINTAGE_JOURNALIERS.DateDebutDecade = '20260801'";
  }
