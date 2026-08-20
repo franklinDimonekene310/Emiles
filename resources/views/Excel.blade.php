@@ -20,13 +20,14 @@
             <a class="btn" href="{{ route('insertHS') }}" > Insert heure</a>                         
         
             <a class="btn" id="pointage_excel" onclick="ouvrirModal('{{ route('genererFichierPointageCoupe') }}', 'Fichier Excel pointage coupe')">Exportation Pointage coupe</a>
-            <a class="btn" id="mis_a_jr" onclick="ouvrirModal('{{ route('misAJourPointageCoupe') }}', 'Mis à jour pointage coupe')">Mis à jour</a>    
+            
+            <a class="btn" id="mis_a_jr" onclick="ouvrirModal('{{ route('misAJourPointageCoupe') }}', 'Mise à jour pointage coupe')">Mis à jour</a>    
                   
             {{-- <a class="btn" onclick="ouvrirModal('{{ route('pointageManquant')}}', 'Pointage manquant')">Pointage manquant</a> --}}
             
             <form action="{{ route('fichierCnss') }}" method="GET" style="display: inline">            
-                <button type="submit">Fichier cnss</button>
-                <input type="month" name="anneeMois" required>
+                <button class="btn" type="submit">Fichier cnss</button>
+                <input type="month" name="anneeMois" requiredtr>
             </form>
 
             <a class="btn" onclick="ouvrirModal('{{ route('afficherToutesLesAbsences')}}', 'Pointage manquant')">Pointage manquant</a>          

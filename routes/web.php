@@ -39,3 +39,4 @@ Route::get('/afficher-toutes-les-absences', [PointageManquantController::class, 
 Route::get('/fichier', [FichierFlorentController::class, 'salaireJournAgri'])->name('salaireJournAgri');
 
 Route::get('/fichier2', [FichierFlorentController::class, 'primeParPose'])->name('primeParPose');
+Route::get('/carriere', [FichierFlorentController::class, 'membreCarriereEnRetard'])->name('membreCarriereEnRetard');

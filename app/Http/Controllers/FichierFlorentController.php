@@ -162,6 +162,51 @@ class FichierFlorentController extends Controller
                 AND POINTAGE_JOURNALIERS.Matricule LIKE 'JJ%'             
                 AND POINTAGE_JOURNALIERS.DateDebutDecade = '20260801'";
  }
+
+   public function membreCarriereEnRetard() {
+
+        $moisContributionCarriere = range(202601, 202607);  
+        
+       
+        $sql = "SELECT 
+                MOUVEMENTS_PAIE.Matricule,
+                SUM(MOUVEMENTS_PAIE.MontantMensuel) AS Montant,
+                STRING_AGG(MOUVEMENTS_PAIE.AnneeMoisMvtPaie, ', ') AS ListeDesMois
+            FROM MOUVEMENTS_PAIE INNER JOIN EMPLOYES ON MOUVEMENTS_PAIE.Matricule = EMPLOYES.Matricule
+            WHERE MOUVEMENTS_PAIE.IDRubrique = '1482'
+            AND EMPLOYES.IDContrat = '0'
+            AND EMPLOYES.Matricule IN (' 86540','106232')
+            AND MOUVEMENTS_PAIE.AnneeMoisMvtPaie IN (
+                '202601',
+                '202602',
+                '202603',
+                '202604',
+                '202605',
+                '202606',
+                '202607'
+            )
+            GROUP BY MOUVEMENTS_PAIE.Matricule
+            HAVING SUM(MOUVEMENTS_PAIE.MontantMensuel) < 70000;";
+
+            $membreCarriereEnRetards = DB::connection('hfsql_personnel')->select($sql);
+
+            foreach ($membreCarriereEnRetards as $membreCarriereEnRetard) {
+
+                $moisDejaCotises = array_map(
+                    'trim',
+                    explode(',', $membreCarriereEnRetard->ListeDesMois)
+                );
+
+                $moisManquants[$membreCarriereEnRetard->Matricule] = array_values(
+                    array_diff(
+                        $moisContributionCarriere,
+                        $moisDejaCotises
+                    )
+                );
+            }
+
+            dd($moisManquants);
+   }
 }
 
 
