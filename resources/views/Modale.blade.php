@@ -102,6 +102,14 @@
 .btn-glass:hover::before {
     left: 140%;
 }
+        a {
+            text-decoration: none;
+            padding: 10px;
+            background: #2805c4;
+            color: #ecf0f1;
+            border-radius: 5px;
+        
+        }
         
     </style>
 </head>
@@ -114,19 +122,21 @@
     </div>
    </div>
 <button class="btn-glass">Valider</button>
+
+  <a href="{{ route('testConnexion') }}">Test Connexion</a>
+
   <script>
-    let open = document.querySelector('#open');
-    let close = document.querySelector('#close');
-    let modale = document.querySelector('#modal');
+        let open = document.querySelector('#open');
+        let close = document.querySelector('#close');
+        let modale = document.querySelector('#modal');
 
-    open.addEventListener('click', () => {
-        modale.style.display = "flex";
-    });
+        open.addEventListener('click', () => {
+            modale.style.display = "flex";
+        });
 
-    close.addEventListener('click', () => {
-        modale.style.display = "none";
-    });
-
+        close.addEventListener('click', () => {
+            modale.style.display = "none";
+        });
   </script>
 </body>
 </html>

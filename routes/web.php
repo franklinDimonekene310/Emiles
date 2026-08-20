@@ -9,9 +9,9 @@ use App\Http\Controllers\FichierFlorentController;
 
 Route::get('/', function () {
  //return view('toast');
-   return view('Excel');
+   //return view('Excel');
      // return view('Home2');
-      //return view('Modale');
+      return view('Modale');
 });
 
 Route::get('/excel', function () {
@@ -27,9 +27,9 @@ Route::get('/jour', [importController::class, 'iprCnn'])->name('iprCnn');
 Route::get('/somme', [importController::class, 'sommerTypepaie'])->name('sommerTypepaie');
 
 
-Route::get('/exportation_pointage_en_excel', [PointageCoupeController::class, 'genererFichierPointageCoupe'])->name('genererFichierPointageCoupe');
-Route::get('/mis_a_jour_pointage_coupe', [PointageCoupeController::class, 'misAJourPointageCoupe'])->name('misAJourPointageCoupe');
-Route::get('/pointage_manquant', [PointageCoupeController::class, 'pointageManquant'])->name('pointageManquant');
+Route::get('/exportation_pointage_en_excel', [PointageCoupeController::class, 'genererFichierPointageCoupe'])
+->name('genererFichierPointageCoupe');
+
 
 // Pointage Manquant
 Route::get('/afficher-toutes-les-absences', [PointageManquantController::class, 'afficherToutesLesAbsences'])
@@ -37,6 +37,10 @@ Route::get('/afficher-toutes-les-absences', [PointageManquantController::class, 
 
 
 Route::get('/fichier', [FichierFlorentController::class, 'salaireJournAgri'])->name('salaireJournAgri');
-
 Route::get('/fichier2', [FichierFlorentController::class, 'primeParPose'])->name('primeParPose');
 Route::get('/carriere', [FichierFlorentController::class, 'membreCarriereEnRetard'])->name('membreCarriereEnRetard');
+
+Route::get('/mis_a_jour_pointage', [PointageCoupeController::class, 'misAJourPointageCoupe'])->name('misAJourPointageCoupe');
+Route::get('/pointage_manquant', [PointageCoupeController::class, 'pointageManquant'])->name('pointageManquant');
+
+Route::get('connexion', [PointageCoupeController::class, 'testConnexion'])->name('testConnexion');
