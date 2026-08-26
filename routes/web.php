@@ -30,6 +30,7 @@ Route::get('/somme', [importController::class, 'sommerTypepaie'])->name('sommerT
 Route::get('/exportation_pointage_en_excel', [PointageCoupeController::class, 'genererFichierPointageCoupe'])->name('genererFichierPointageCoupe');
 Route::get('/mis_a_jour_pointage_coupe', [PointageCoupeController::class, 'misAJourPointageCoupe'])->name('misAJourPointageCoupe');
 Route::get('/pointage_manquant', [PointageCoupeController::class, 'pointageManquant'])->name('pointageManquant');
+Route::get('/journalier', [PointageCoupeController::class, 'journalier'])->name('journalier');
 
 // Pointage Manquant
 Route::get('/afficher-toutes-les-absences', [PointageManquantController::class, 'afficherToutesLesAbsences'])

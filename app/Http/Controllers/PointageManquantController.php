@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ValidationDecadeRequest;
 use Carbon\CarbonPeriod;
 use Carbon\Carbon;
-
 use DB;
 
 class PointageManquantController extends Controller
@@ -43,7 +42,8 @@ class PointageManquantController extends Controller
                     ) AS Matricule,
                     ? AS Date
                 ", [$date])
-                //->where('IDDirection', '=', '05')
+                //->where('IDGrade', '>', '15')
+                ->whereNotIn('IDDirection', ['05', '10', '12'])
                 ->where('IDFinActivite', '0')
                 ->where('DateEngagement', '<=', $date)
                 ->whereNotIn('Matricule', function ($query) use ($date) {
@@ -51,7 +51,7 @@ class PointageManquantController extends Controller
                         ->select('Matricule')
                         ->where('DatePointage', $date);
                 })
-                //->whereIn('Matricule', ['129091', '142079', '128524'])
+                //->whereIn('Matricule', [' 82861', '82861'])
                 ->whereNotIn('Matricule', $this->lesExceptions)
                 ->get();
 

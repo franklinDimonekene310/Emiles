@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use Rap2hpoutre\FastExcel\FastExcel;
 use DB;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -254,7 +255,7 @@ class PointageCoupeController extends Controller
         ->where('DatePointage', '>=', $dateDebutDecade)
         ->where('DatePointage', '<=', $dateFinDecade)
         ->where('IDPointage', 20)       
-        ->get();
+        ->get();   
 
        
 
@@ -309,5 +310,130 @@ class PointageCoupeController extends Controller
                     'finDecade.after_or_equal' => 'La date de fin doit être supérieure ou égale à la date de début.',
                 ]
         );
+    }
+
+    public function journalier() {
+
+     // Lecture fichier Excel
+        ///$path = 'C:\Users\B.NIMI\Desktop\DIVERS\HS JUIL 2026\a inserer.xlsx';
+        $path = public_path('Pointage Journ.xlsx');        
+        $lignes = (new FastExcel)->sheet(1)->import($path);
+
+        $date_pointage = [];
+        $matricule = [];
+        $tache = [];
+        $debut_decade = [];
+        $annee_equipe_matricule = [];
+
+        $insertValues = [];
+
+        $CodeTraitementJ = '1';
+
+        foreach ($lignes as $ligne) {            
+        // Forcer le matricule à avoir 6 caractères
+            $Matricule = 'JJ'.$ligne['matricule'];
+            
+            $DateDebutDecade = Carbon::parse($ligne['debut_decade'])->format('Ymd');   
+            $DatePointage = Carbon::parse($ligne['date_pointage'])->format('Ymd');
+            $IDAnnee = Carbon::parse($ligne['date_pointage'])->format('Y');
+            $IDEquipeJ = $ligne['equipe'];
+
+            $tache = (string) $ligne['tache'];
+
+            if (strlen($tache) > 2) {
+                $IDTacheJ = substr($tache, 0, 2);
+                $TacheRealisee = (int) substr($tache, 2, 1);
+            } else {
+                $IDTacheJ = $tache;
+                $TacheRealisee = 0;
+            }               
+
+            $annee_equipe_matricule = $IDAnnee. $IDEquipeJ. $Matricule;
+
+            $insertValues[] = "(
+                DEFAULT,
+                DEFAULT,
+                DEFAULT,
+                '{$DateDebutDecade}',
+                '1',
+                {$TacheRealisee},
+                '{$Matricule}',
+                '{$IDEquipeJ}',
+                '{$DatePointage}',
+                '{$IDTacheJ}',
+                '{$IDAnnee}',
+                '{$annee_equipe_matricule}'
+            )";
+
+        }
+
+
+         $sqlInsert = "
+            INSERT INTO POINTAGE_JOURNALIERS_2
+            (
+                MontantTaxe,
+                Rotation,
+                PoseTache,
+                DateDebutDecade,    
+                CodeTraitementJ,
+                TacheRealisee,
+                Matricule,
+                IDEquipeJ,
+                DatePointage,
+                IDTacheJ,
+                IDAnnee,
+                Annee_Equipe_Matricule
+            )
+            VALUES
+            " . implode(",\n", $insertValues) . ";
+            ";
+           
+
+            $res = DB::connection('hfsql_journalier')
+                ->insert($sqlInsert);
+
+            dd($res);
+
+            //DB::statement($sqlInsert);
+
+
+            /*$concatenation = '202530JJ1183';
+
+            $sql22 = "INSERT INTO POINTAGE_JOURNALIERS_2
+            (
+                MontantTaxe,
+                Rotation,
+                PoseTache,
+                DateDebutDecade,    
+                CodeTraitementJ,
+                TacheRealisee,
+                Matricule,
+                IDEquipeJ,
+                DatePointage,
+                IDTacheJ,
+                IDAnnee,
+                Annee_Equipe_Matricule
+            )
+            VALUES
+            (
+                DEFAULT,
+                DEFAULT,
+                DEFAULT,
+                '20250901',
+                '1',
+                6,
+                'JJ1183',
+                '30',
+                '20250907',
+                '24',
+                '2025',
+                ?
+            )";
+
+            $res = DB::connection('hfsql_journalier')
+                ->insert($sql22, [$concatenation]);      
+        
+         dd($res);*/
+               
     }
 }

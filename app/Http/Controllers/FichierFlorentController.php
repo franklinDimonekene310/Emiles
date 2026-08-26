@@ -13,12 +13,12 @@ class FichierFlorentController extends Controller
     //
 
     public function salaireJournAgri() {
-
+      
         $prime = DB::connection('hfsql_personnel')
             ->table('HISTORIQUE_PRIMES_DECADAIRES_AGRO')
             ->whereIn('DateDebutDecade', [
-                '20260501',
-                '20260511',
+                '20260811'
+                /*'20260511',
                 '20260521',
                 '20260601',
                 '20260611',
@@ -26,7 +26,7 @@ class FichierFlorentController extends Controller
                 '20260701',
                 '20260711',
                 '20260721',
-                '20260801'
+                '20260801'*/
             ])
             ->where('Annee', 2026)
             ->where('Matricule','LIKE', 'JJ%')
@@ -39,7 +39,7 @@ class FichierFlorentController extends Controller
             $pointages = DB::connection('hfsql_journalier')
                 ->table('POINTAGE_JOURNALIERS')
                 ->whereIn('DateDebutDecade', [
-                    '20260501',
+                    '20260811'/*,
                     '20260511',
                     '20260521',
                     '20260601',
@@ -48,12 +48,17 @@ class FichierFlorentController extends Controller
                     '20260701',
                     '20260711',
                     '20260721',
-                    '20260801'
+                    '20260801'*/
                 ])    
+                //->where('DatePointage','20260816')
                 ->where('Matricule','LIKE', 'JJ%')
+                //->where('IDTacheJ','LIKE', '204')
+                ->whereIn('IDEquipeJ', ['14'] )
                 ->where('IDAnnee', 2026)
                 ->orderBy('DatePointage')
                 ->get();
+
+                //dd($pointages);
 
         $resultat = $pointages->map(function ($pointage) use ($prime) {
             // Récupération de la prime correspondant au matricule ET à la décade
@@ -77,6 +82,7 @@ class FichierFlorentController extends Controller
 
             return [
                 'Matricule'    => $pointage->Matricule,
+                'Equipe'    => $pointage->IDEquipeJ,
                 'IDTacheJ'     => $pointage->IDTacheJ . $tacherealise,
                 'DatePointage' => Carbon::parse($pointage->DatePointage)->format('d-m-Y'),
                 'Montantjour'  => (float) ($primeEmploye?->$nomColonne ?? 0),
@@ -143,7 +149,8 @@ class FichierFlorentController extends Controller
                 AND DateDebutDecade = '20260801'
                 ";
 
-        $reqDetailsJournAgri = "SELECT 
+              // Détais pointages JA : date_pointage, equipe, matricule, tache, pose, nom 
+              $reqDetailsJournAgri = "SELECT 
                 POINTAGE_JOURNALIERS.DatePointage, POINTAGE_JOURNALIERS.IDEquipeJ,
                 POINTAGE_JOURNALIERS.Matricule, 
                 CASE                    
@@ -152,21 +159,20 @@ class FichierFlorentController extends Controller
                 END AS Tache,
                 CASE                    
                     WHEN POINTAGE_JOURNALIERS.IDTacheJ <> '20' AND POINTAGE_JOURNALIERS.TacheRealisee = '6' THEN 'Pose 6-18'
-                    WHEN POINTAGE_JOURNALIERS.IDTacheJ = '20' AND POINTAGE_JOURNALIERS.datepointage IN ('20260802', '20260803', '20260809') THEN 'Dim/Férié'
+                    WHEN POINTAGE_JOURNALIERS.IDTacheJ = '20' AND POINTAGE_JOURNALIERS.datepointage IN ('20260816') THEN 'Dim/Férié'
                     ELSE 'Pose 6-14 ou 7-15'
                 END AS Pose, JOURNALIERS.NomJournalier
                 FROM [POINTAGE_JOURNALIERS] INNER JOIN JOURNALIERS ON POINTAGE_JOURNALIERS.Matricule = JOURNALIERS.Matricule
                 WHERE POINTAGE_JOURNALIERS.IDAnnee = '2026'
                 AND JOURNALIERS.IDAnnee = '2026'
-                AND POINTAGE_JOURNALIERS.IDEquipeJ IN ('14', '22', '23', '21', '24', '28', '30', '33', '38' )
+                AND POINTAGE_JOURNALIERS.IDEquipeJ IN ('14', '22', '23', '21', '24', '28', '30', '33', '38', '80', '84', '85', '70' )
                 AND POINTAGE_JOURNALIERS.Matricule LIKE 'JJ%'             
-                AND POINTAGE_JOURNALIERS.DateDebutDecade = '20260801'";
+                AND POINTAGE_JOURNALIERS.DateDebutDecade = '20260811'";
  }
 
    public function membreCarriereEnRetard() {
 
-        $moisContributionCarriere = range(202601, 202607);  
-        
+        $moisContributionCarriere = range(202601, 202607);          
        
         $sql = "SELECT 
                 MOUVEMENTS_PAIE.Matricule,
