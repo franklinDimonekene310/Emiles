@@ -140,6 +140,16 @@ return [
             //'charset' => 'utf8',
         ],
 
+        // La configuration locale
+        'hfsql_service' => [
+            'driver' => 'odbc',
+            'dsn' => 'DRIVER={HFSQL};Server Name=DESKTOP-471P7GF;Server Port=4900;Database=SERVICE;',
+            'database' =>'SERVICE' ,
+            'username' => 'Admin',
+            'password' => 'Admin',
+            //'charset' => 'utf8',
+        ],
+
     ],
 
     /*

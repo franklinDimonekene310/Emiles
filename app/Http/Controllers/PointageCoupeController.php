@@ -7,14 +7,43 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use Rap2hpoutre\FastExcel\FastExcel;
 use DB;
+
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
 
 class PointageCoupeController extends Controller
 {
+    public function testConnexion(){
+            try {
+                $employes = DB::connection('hfsql_service')
+                ->table('Clients')
+                ->first();
+                dd( $employes);
+             //return response()->json($employes);
+            }  catch (\Exception $e) {
+                return "Erreur : ". $e->getMessage();
+            }
+    
+ $employes = DB::connection('hfsql_service')
+                ->table('Clients')
+                ->select(
+                    'nom',
+                    'prenom'                    
+                )->get();
+               /* $employes = DB::connection('hfsql_personnel')
+                ->table('EMPLOYES')
+                ->select(
+                    'Matricule',
+                    'NomEmploye',
+                    'IDDirection',
+                    'IDGrade'
+                )->get();*/
+                dd($employes);
+    }
     
     public function pointageManquant(Request $request) {
       // Affiche tableau des employés qui manquent des pontages à une plage des dates
