@@ -110,6 +110,7 @@ class FichierFlorentController extends Controller
                 AND POINTAGE_JOURNALIERS.DateDebutDecade = '20260801'";
             $pointages = DB::connection('hfsql_journalier')->select($sql);
  dd($pointages);
+
             $pointages = DB::connection('hfsql_journalier')
                         ->table('POINTAGE_JOURNALIERS')
                         ->whereIn('DateDebutDecade', [                   
@@ -212,6 +213,49 @@ class FichierFlorentController extends Controller
             }
 
             dd($moisManquants);
+
+            // RECUPERATION IDCategorieGrade dans EMPLOYES
+            // Construction des tables des
+            DB::connection('hfsql_personnel')
+            ->table('EMPLOYES')
+            ->select('Matricule', 'IDCategorieGrade')
+            ->whereIn('Matricule', [])
+            ->get();
+
+            // Insertion des données dans la base
+            $sql22 = "INSERT INTO MOUVEMENTS_PAIE
+            (
+                Matricule,
+                IDRubrique,
+                NumDocumentPaie,
+                DateMvtPaie,  LibMvtPaie,
+                MontantTotal,  MontantMensuel,
+                CumulRetenues,   NbreMois,
+                MvtFixe,   ModeRetenue,
+                IDCategorieGrade, CodeTraitMvtPaie,
+                DateSaisieMvtPaie,  AnneeMoisMvtPaie                
+            )
+            VALUES
+            (
+                ' 86540',
+                '1482',
+                '000/08',
+                '20260828',
+                'Cotis Carri Janv',
+                10000,
+                10000,
+                0,
+                1,
+                '0',
+                0,
+                '02',
+                0,
+                '20260828',
+                '202608'
+            )";
+
+            $res = DB::connection('hfsql_journalier')
+                ->insert($sql22, [$concatenation]); 
    }
 }
 

@@ -42,8 +42,8 @@ class PointageManquantController extends Controller
                     ) AS Matricule,
                     ? AS Date
                 ", [$date])
-                //->where('IDGrade', '>', '15')
-                ->whereNotIn('IDDirection', ['05', '10', '12'])
+                ->where('IDGrade', '>', '15')
+                //->whereNotIn('IDDirection', ['05'])
                 ->where('IDFinActivite', '0')
                 ->where('DateEngagement', '<=', $date)
                 ->whereNotIn('Matricule', function ($query) use ($date) {
