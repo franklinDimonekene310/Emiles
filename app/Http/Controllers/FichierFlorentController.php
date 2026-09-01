@@ -12,6 +12,21 @@ class FichierFlorentController extends Controller
 {
     //
 
+    private array $nomsMois = [
+        '01' => 'Janvier',
+        '02' => 'Février',
+        '03' => 'Mars',
+        '04' => 'Avril',
+        '05' => 'Mai',
+        '06' => 'Juin',
+        '07' => 'Juillet',
+        '08' => 'Août',
+        '09' => 'Septembre',
+        '10' => 'Octobre',
+        '11' => 'Novembre',
+        '12' => 'Décembre',
+    ];
+
     public function salaireJournAgri() {
       
         $prime = DB::connection('hfsql_personnel')
@@ -109,7 +124,8 @@ class FichierFlorentController extends Controller
                 AND POINTAGE_JOURNALIERS.Matricule in ( 'JJ3096', 'JJ3095', 'JJ3092')
                 AND POINTAGE_JOURNALIERS.DateDebutDecade = '20260801'";
             $pointages = DB::connection('hfsql_journalier')->select($sql);
- dd($pointages);
+            
+            dd($pointages);
 
             $pointages = DB::connection('hfsql_journalier')
                         ->table('POINTAGE_JOURNALIERS')
@@ -173,10 +189,16 @@ class FichierFlorentController extends Controller
 
    public function membreCarriereEnRetard() {
 
-        $moisContributionCarriere = range(202601, 202607);          
+        $periodeContributions = array_map(function ($mois) {
+                return (object) [
+                        'anneeMois' => $mois
+                        ];
+                }, range(202601, 202607));                
+               
        
         $sql = "SELECT 
                 MOUVEMENTS_PAIE.Matricule,
+                EMPLOYES.IDCategorieGrade,
                 SUM(MOUVEMENTS_PAIE.MontantMensuel) AS Montant,
                 STRING_AGG(MOUVEMENTS_PAIE.AnneeMoisMvtPaie, ', ') AS ListeDesMois
             FROM MOUVEMENTS_PAIE INNER JOIN EMPLOYES ON MOUVEMENTS_PAIE.Matricule = EMPLOYES.Matricule
@@ -192,41 +214,123 @@ class FichierFlorentController extends Controller
                 '202606',
                 '202607'
             )
-            GROUP BY MOUVEMENTS_PAIE.Matricule
-            HAVING SUM(MOUVEMENTS_PAIE.MontantMensuel) < 70000;";
+            GROUP BY MOUVEMENTS_PAIE.Matricule, EMPLOYES.IDCategorieGrade
+            HAVING SUM(MOUVEMENTS_PAIE.MontantMensuel) < 70000";
 
-            $membreCarriereEnRetards = DB::connection('hfsql_personnel')->select($sql);
+            $membreCariContributions = collect(DB::connection('hfsql_personnel')->select($sql))->keyBy('Matricule');            
+                           
+            foreach ($membreCariContributions as $membreCariContribution) {
 
-            foreach ($membreCarriereEnRetards as $membreCarriereEnRetard) {
+                $moisDejaCotises = array_map(function ($mois) {
+                        return (object) [
+                            'anneeMois' => trim($mois)
+                        ];
+                    },
+                    explode(',', $membreCariContribution->ListeDesMois)
+                );                
 
-                $moisDejaCotises = array_map(
-                    'trim',
-                    explode(',', $membreCarriereEnRetard->ListeDesMois)
-                );
-
-                $moisManquants[$membreCarriereEnRetard->Matricule] = array_values(
-                    array_diff(
-                        $moisContributionCarriere,
-                        $moisDejaCotises
+                // Recherche des mois manquants
+                $moisManquantContributions[$membreCariContribution->Matricule] = array_values(
+                    array_filter(
+                        $periodeContributions,
+                        fn($periode) => !in_array(
+                            (string) $periode->anneeMois,
+                            array_map(
+                                fn($mois) => (string) $mois->anneeMois,
+                                $moisDejaCotises
+                            ),
+                            true
+                        )
                     )
                 );
+            }          
+            
+            // Ajout les noms des mois            
+            foreach ($moisManquantContributions as $matricule => &$listeMois) {
+                foreach ($listeMois as  $ligneMois) {
+                    // Récupérer les 2 derniers caractères : 01, 02, etc.
+                    $numeroMois = substr((string) $ligneMois->anneeMois, -2);
+                   
+                    $ligneMois->anneeMois = (string) $ligneMois->anneeMois;  // Convertir anneeMois en chaine
+                    $ligneMois->nomMois = $this->nomsMois[$numeroMois];  // Ajouter le nom du mois
+                    $ligneMois->categorieGrade = $membreCariContributions[$matricule]->IDCategorieGrade; // Ajouter la catégorie grade                   
+                }
             }
 
-            dd($moisManquants);
+            unset($listeMois);            
 
-            // RECUPERATION IDCategorieGrade dans EMPLOYES
-            // Construction des tables des
-            DB::connection('hfsql_personnel')
+            $matriculeMembreEnRetard = array_keys($moisManquantContributions);
+           
+            // Récupération IDCategorieGrade dans EMPLOYES            
+            /*$employeIdCategories = DB::connection('hfsql_personnel')
             ->table('EMPLOYES')
             ->select('Matricule', 'IDCategorieGrade')
-            ->whereIn('Matricule', [])
-            ->get();
+            ->whereIn('Matricule', $matriculeMembreEnRetard)
+            ->get()
+            ->keyBy('Matricule'); */
 
+            
+            /*
+            foreach ($employeIdCategories as $employe) {
+                // Récupérer les mois correspondant au matricule
+                $mois = $moisManquantContributions[$employe->Matricule] ?? [];               
+
+                if (is_object($employe)) {
+                    $employe->Mois = array_map('strval', $mois);
+                }
+            }*/
+            
+            // ---- Création des valeurs à insérer dans la requete ---- //
+
+            $insertValues = [];  $dateMvtPaie = '20260828'; $dateSaisieMvtPaie = '20260828'; $numDoc = '000/08'; $rubriquePaie = '1482'; 
+
+            foreach ($moisManquantContributions as $matricule => $lignes) {         
+                
+                foreach($lignes as $uneLigne) {
+                     $libelleMvtPaie = 'Cotis Carri '.$uneLigne->nomMois;
+                     $insertValues[] = "(
+                                '{$matricule}',
+                                '{$rubriquePaie}',
+                                '{$numDoc}',
+                                '{$dateMvtPaie}',
+                                '{$libelleMvtPaie}',
+                                10000,
+                                10000,
+                                0,
+                                1,
+                                '0',
+                                0,
+                                '{$uneLigne->categorieGrade}',
+                                0,
+                                '{$dateSaisieMvtPaie}',
+                                '{$uneLigne->anneeMois}'
+                            )";
+                }               
+            }
+            
+            // ---- Création de la requete de l'insertion ---- //
+            $sqlInsert = "INSERT INTO MOUVEMENTS_PAIE
+                (
+                    Matricule, IDRubrique,
+                    NumDocumentPaie,
+                    DateMvtPaie,  LibMvtPaie,
+                    MontantTotal,  MontantMensuel,
+                    CumulRetenues,   NbreMois,
+                    MvtFixe,   ModeRetenue,
+                    IDCategorieGrade, CodeTraitMvtPaie,
+                    DateSaisieMvtPaie,  AnneeMoisMvtPaie                
+                )
+                VALUES
+                " . implode(",\n", $insertValues) . ";
+                ";
+                dd($sqlInsert);            
+
+            //dd(collect($employeIdCategories)->groupBy('Matricule')->toArray());
+            
             // Insertion des données dans la base
             $sql22 = "INSERT INTO MOUVEMENTS_PAIE
             (
-                Matricule,
-                IDRubrique,
+                Matricule, IDRubrique,
                 NumDocumentPaie,
                 DateMvtPaie,  LibMvtPaie,
                 MontantTotal,  MontantMensuel,
@@ -254,8 +358,7 @@ class FichierFlorentController extends Controller
                 '202608'
             )";
 
-            $res = DB::connection('hfsql_journalier')
-                ->insert($sql22, [$concatenation]); 
+            // $res = DB::connection('hfsql_journalier')->insert($sql22, [$concatenation]); 
    }
 }
 

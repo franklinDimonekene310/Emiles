@@ -272,7 +272,7 @@ class importController extends Controller
            Les heures supplémentaires sont puisées dans un fichier Excel
         */
           
-        $path = 'C:\Users\B.NIMI\Desktop\DIVERS\HS JUIL 2026\a modifier.xlsx';
+        $path = 'C:\Users\B.NIMI\Desktop\DIVERS\HEURES SUP\HS AOUT 2026\A modifier initial.xlsx';
        // $path = public_path('Cotisation Cnss.xlsx');        
         $lignes = (new FastExcel)->sheet(1)->import($path);
 
@@ -281,10 +281,12 @@ class importController extends Controller
         $case_200 = [];
         $matricules = [];
 
+        $anneeMoisPaie = '202608';
+        $dateCreation = '20260831';
+
         foreach ($lignes as $ligne) {
 
-            // On conserve exactement la valeur du fichier Excel
-            // $matricule = $ligne['matricule'];
+            // On conserve exactement la valeur du fichier Excel            
             $matricule = str_pad($ligne['matricule'], 6, ' ', STR_PAD_LEFT);
 
             $_130 = (int) $ligne['_130'];
@@ -317,20 +319,21 @@ class importController extends Controller
                 END
 
             WHERE Matricule IN (" . implode(',', $matricules) . ")
-            AND AnneeMoisHS = '202607'
-            AND DateCreationHS = '20260731';
+            AND AnneeMoisHS = '{$anneeMoisPaie}'
+            AND DateCreationHS = '{$dateCreation}';
             ";
 
-            $nbLignes = DB::connection('hfsql_personnel')
-              ->affectingStatement($sql);
+            dd($sql);
 
-            dd('Lignes affectées ' . $nbLignes);
+            // $nbLignes = DB::connection('hfsql_personnel')->affectingStatement($sql);
+
+            // dd('Lignes affectées ' . $nbLignes);
     }
 
     public function insertHS() {
        
-        $path = 'C:\Users\B.NIMI\Desktop\DIVERS\HS JUIL 2026\a inserer.xlsx';
-       // $path = public_path('Cotisation Cnss.xlsx');        
+        $path = 'C:\Users\B.NIMI\Desktop\DIVERS\HEURES SUP\HS AOUT 2026\A insérer.xlsx';
+        // $path = public_path('Cotisation Cnss.xlsx');        
         $lignes = (new FastExcel)->sheet(1)->import($path);
 
         $case_130 = [];
@@ -353,7 +356,7 @@ class importController extends Controller
 
             $insertValues[] = "(
                 '{$matricule}',
-                '202607',
+                '202608',
                 DEFAULT,
                 DEFAULT,
                 DEFAULT,
@@ -361,7 +364,7 @@ class importController extends Controller
                 {$hs160},
                 {$hs200},
                 '0',
-                '20260731',
+                '20260831',
                 DEFAULT
             )";
         }
@@ -385,13 +388,17 @@ class importController extends Controller
             VALUES
             " . implode(",\n", $insertValues) . ";
             ";
-            dd($sqlInsert);
-            //DB::statement($sqlInsert);
+           dd($sqlInsert);
+           // DB::connection('hfsql_personnel')->insert
+           // DB::connection('hfsql_personnel')->insert($sqlInsert);
+
+           dd("insertion effectuée");
     }
 
 
     public function test () {
-        $nourritures = [
+           // Fonction partition de Laravel
+            $nourritures = [
                 ['name' => 'tomate', 'category'=> 'fruit'], ['name' => 'mangue', 'category'=> 'fruit'] , ['name' => 'banane', 'category'=> 'fruit'],
                 ['name' => 'croissant', 'category'=> 'patisserie'], ['name' => 'pain', 'category'=> 'patisserie'] , ['name' => 'biscuit', 'category'=> 'patisserie']
             ];

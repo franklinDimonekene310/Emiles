@@ -28,7 +28,7 @@ class PointageCoupeController extends Controller
                 return "Erreur : ". $e->getMessage();
             }
     
- $employes = DB::connection('hfsql_service')
+            $employes = DB::connection('hfsql_service')
                 ->table('Clients')
                 ->select(
                     'nom',
