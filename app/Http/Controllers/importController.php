@@ -274,7 +274,10 @@ class importController extends Controller
           
         $path = 'C:\Users\B.NIMI\Desktop\DIVERS\HEURES SUP\HS AOUT 2026\A modifier initial.xlsx';
        // $path = public_path('Cotisation Cnss.xlsx');        
-        $lignes = (new FastExcel)->sheet(1)->import($path);
+        $lignes = (new FastExcel)->sheet(2)->import($path);
+        $case_35 = [];
+        $case_37_5 = [];
+        $case_100 = [];
 
         $case_130 = [];
         $case_160 = [];
@@ -289,9 +292,17 @@ class importController extends Controller
             // On conserve exactement la valeur du fichier Excel            
             $matricule = str_pad($ligne['matricule'], 6, ' ', STR_PAD_LEFT);
 
+            $_35 = (int) $ligne['_35'];
+            $_37_5 = (int) $ligne['_37_5'];
+            $_100 = (int) $ligne['_100'];
+
             $_130 = (int) $ligne['_130'];
             $_160 = (int) $ligne['_160'];
             $_200 = (int) $ligne['_200'];
+
+            $case_35[] = "WHEN '{$matricule}' THEN {$_35}";
+            $case_37_5[] = "WHEN '{$matricule}' THEN {$_37_5}";
+            $case_100[] = "WHEN '{$matricule}' THEN {$_100}";
 
             $case_130[] = "WHEN '{$matricule}' THEN {$_130}";
             $case_160[] = "WHEN '{$matricule}' THEN {$_160}";
@@ -303,6 +314,21 @@ class importController extends Controller
         $sql = "
             UPDATE HS_MENSUEL
             SET
+               NbreHS35 = NbreHS35 + CASE Matricule
+                    " . implode("\n        ", $case_35) . "
+                    ELSE 0
+                END,
+
+                NbreHS37_5 = NbreHS37_5 + CASE Matricule
+                    " . implode("\n        ", $case_37_5) . "
+                    ELSE 0
+                END,
+
+                NbreHS100 = NbreHS100 + CASE Matricule
+                    " . implode("\n        ", $case_100) . "
+                    ELSE 0
+                END,
+
                 NbreHS130 = NbreHS130 + CASE Matricule
                     " . implode("\n        ", $case_130) . "
                     ELSE 0
@@ -332,9 +358,14 @@ class importController extends Controller
 
     public function insertHS() {
        
-        $path = 'C:\Users\B.NIMI\Desktop\DIVERS\HEURES SUP\HS AOUT 2026\A insérer.xlsx';
+        //$path = 'C:\Users\B.NIMI\Desktop\DIVERS\HEURES SUP\HS AOUT 2026\A insérer.xlsx';
+        $path = 'C:\Users\B.NIMI\Desktop\DIVERS\HEURES SUP\HS AOUT 2026\A modifier initial.xlsx';
         // $path = public_path('Cotisation Cnss.xlsx');        
-        $lignes = (new FastExcel)->sheet(1)->import($path);
+        $lignes = (new FastExcel)->sheet(2)->import($path);
+        
+        $case_35 = [];
+        $case_37_5 = [];
+        $case_100 = [];
 
         $case_130 = [];
         $case_160 = [];
@@ -347,6 +378,9 @@ class importController extends Controller
             
         // Forcer le matricule à avoir 6 caractères
             $matricule = str_pad($ligne['matricule'], 6, ' ', STR_PAD_LEFT);
+            $hs35 = (float) $ligne['_35'];
+            $hs37_5 = (float) $ligne['_37_5'];
+            $hs100 = (float) $ligne['_100'];
 
             $hs130 = (float) $ligne['_130'];
             $hs160 = (float) $ligne['_160'];
@@ -357,15 +391,14 @@ class importController extends Controller
             $insertValues[] = "(
                 '{$matricule}',
                 '202608',
-                DEFAULT,
-                DEFAULT,
-                DEFAULT,
+                {$hs35},
+                {$hs37_5},
+                {$hs100},
                 {$hs130},
                 {$hs160},
                 {$hs200},
                 '0',
-                '20260831',
-                DEFAULT
+                '20260831'
             )";
         }
 
@@ -382,15 +415,15 @@ class importController extends Controller
                 NbreHS160,
                 NbreHS200,
                 CodeTraitHsMens,
-                DateCreationHS,
-                Matricule_AnneeMois
+                DateCreationHS
+                
             )
             VALUES
-            " . implode(",\n", $insertValues) . ";
+            " . implode(",\n", $insertValues) . "
             ";
            dd($sqlInsert);
-           // DB::connection('hfsql_personnel')->insert
-           // DB::connection('hfsql_personnel')->insert($sqlInsert);
+           
+          DB::connection('hfsql_personnel')->insert($sqlInsert);
 
            dd("insertion effectuée");
     }

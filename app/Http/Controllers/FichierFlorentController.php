@@ -259,30 +259,12 @@ class FichierFlorentController extends Controller
 
             unset($listeMois);            
 
-            $matriculeMembreEnRetard = array_keys($moisManquantContributions);
-           
-            // Récupération IDCategorieGrade dans EMPLOYES            
-            /*$employeIdCategories = DB::connection('hfsql_personnel')
-            ->table('EMPLOYES')
-            ->select('Matricule', 'IDCategorieGrade')
-            ->whereIn('Matricule', $matriculeMembreEnRetard)
-            ->get()
-            ->keyBy('Matricule'); */
-
-            
-            /*
-            foreach ($employeIdCategories as $employe) {
-                // Récupérer les mois correspondant au matricule
-                $mois = $moisManquantContributions[$employe->Matricule] ?? [];               
-
-                if (is_object($employe)) {
-                    $employe->Mois = array_map('strval', $mois);
-                }
-            }*/
-            
+            $matriculeMembreEnRetard = array_keys($moisManquantContributions);         
+                      
             // ---- Création des valeurs à insérer dans la requete ---- //
 
-            $insertValues = [];  $dateMvtPaie = '20260828'; $dateSaisieMvtPaie = '20260828'; $numDoc = '000/08'; $rubriquePaie = '1482'; 
+            $insertValues = [];  $dateMvtPaie = '20260828'; $dateSaisieMvtPaie = '20260828'; $numDoc = '000/08'; $rubriquePaie = '1482'; $montantTotal = 10000; 
+            $montantMensuel = 10000; $cumulRetenue = 0; $nbreMois = 1; $mvtFixe = '0';
 
             foreach ($moisManquantContributions as $matricule => $lignes) {         
                 
@@ -294,11 +276,11 @@ class FichierFlorentController extends Controller
                                 '{$numDoc}',
                                 '{$dateMvtPaie}',
                                 '{$libelleMvtPaie}',
-                                10000,
-                                10000,
-                                0,
-                                1,
-                                '0',
+                                $montantTotal,
+                                $montantMensuel,
+                                $cumulRetenue,
+                                $nbreMois,
+                                '{$mvtFixe}',
                                 0,
                                 '{$uneLigne->categorieGrade}',
                                 0,
@@ -323,12 +305,12 @@ class FichierFlorentController extends Controller
                 VALUES
                 " . implode(",\n", $insertValues) . ";
                 ";
-                dd($sqlInsert);            
-
-            //dd(collect($employeIdCategories)->groupBy('Matricule')->toArray());
+                
+            $res = DB::connection('hfsql_journalier')->insert($sqlInsert); 
+            dd('Opération effectuée', $res);
             
             // Insertion des données dans la base
-            $sql22 = "INSERT INTO MOUVEMENTS_PAIE
+            /*$sql22 = "INSERT INTO MOUVEMENTS_PAIE
             (
                 Matricule, IDRubrique,
                 NumDocumentPaie,
@@ -356,8 +338,7 @@ class FichierFlorentController extends Controller
                 0,
                 '20260828',
                 '202608'
-            )";
-
+            )";*/
             // $res = DB::connection('hfsql_journalier')->insert($sql22, [$concatenation]); 
    }
 }
