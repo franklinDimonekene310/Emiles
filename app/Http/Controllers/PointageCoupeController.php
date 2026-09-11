@@ -186,7 +186,7 @@ class PointageCoupeController extends Controller
         }
       
         $writer = new Xlsx($spreadsheet);
-        $writer->save(public_path('PointageDecadaireCoupe.xlsx')); 
+        $writer->save(public_path('PointageDecadaireCoupe_'.$dateDebutDecade.'.xlsx')); 
       
         return redirect()->back()->with('success', 'Fichier Excel généré avec succès.');
     }
@@ -225,8 +225,8 @@ class PointageCoupeController extends Controller
                     ->where('Matricule', $pointage['Matricule'])
                     ->where('DatePointage', $pointage['DatePointage'])
                     ->update([
-                        'IDTacheJ65'      => (int) $pointage['IDPointage'],
-                        'TacheRealisee65' => $pointage['IDTacheJ'],
+                        'IDTacheJ_test'      => (int) $pointage['IDPointage'],
+                        'TacheRealisee_test' => $pointage['IDTacheJ'],
                     ]);
 
                 // Facultatif : vérifier qu'une ligne a bien été mise à jour
@@ -285,7 +285,6 @@ class PointageCoupeController extends Controller
         ->where('DatePointage', '<=', $dateFinDecade)
         ->where('IDPointage', 20)       
         ->get();   
-
        
 
         // Récupération des équipes

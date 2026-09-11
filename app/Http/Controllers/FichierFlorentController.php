@@ -204,6 +204,7 @@ class FichierFlorentController extends Controller
             FROM MOUVEMENTS_PAIE INNER JOIN EMPLOYES ON MOUVEMENTS_PAIE.Matricule = EMPLOYES.Matricule
             WHERE MOUVEMENTS_PAIE.IDRubrique = '1482'
             AND EMPLOYES.IDContrat = '0'
+            AND EMPLOYES.IDFinActivite = '0'
             AND EMPLOYES.Matricule IN (' 86540','106232')
             AND MOUVEMENTS_PAIE.AnneeMoisMvtPaie IN (
                 '202601',

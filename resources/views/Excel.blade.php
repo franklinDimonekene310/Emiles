@@ -27,7 +27,7 @@
             
             <form action="{{ route('fichierCnss') }}" method="GET" style="display: inline">            
                 <button class="btn" type="submit">Fichier cnss</button>
-                <input type="month" name="anneeMois" requiredtr>
+                <input type="month" name="anneeMois" required>
             </form>
 
             <a class="btn" onclick="ouvrirModal('{{ route('afficherToutesLesAbsences')}}', 'Pointage manquant')">Pointage manquant</a>          

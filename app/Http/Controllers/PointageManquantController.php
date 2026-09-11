@@ -10,7 +10,6 @@ use DB;
 
 class PointageManquantController extends Controller
 {
-    //
     private array $lesExceptions = [
                     '114396',
                     '131627',
@@ -42,8 +41,8 @@ class PointageManquantController extends Controller
                     ) AS Matricule,
                     ? AS Date
                 ", [$date])
-                ->where('IDGrade', '>', '15')
-                //->whereNotIn('IDDirection', ['05'])
+                ->where('IDGrade', '=', '01')
+                ->whereIn('IDDirection', ['05'])
                 ->where('IDFinActivite', '0')
                 ->where('DateEngagement', '<=', $date)
                 ->whereNotIn('Matricule', function ($query) use ($date) {

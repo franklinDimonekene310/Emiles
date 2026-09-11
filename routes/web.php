@@ -5,13 +5,15 @@ use App\Http\Controllers\importController;
 use App\Http\Controllers\PointageCoupeController;
 use App\Http\Controllers\PointageManquantController;
 use App\Http\Controllers\FichierFlorentController;
+use App\Http\Controllers\CnssController;
 
 
 Route::get('/', function () {
  //return view('toast');
-  return view('Excel');
+  //return view('Excel');
      // return view('Home2');
      // return view('Modale');
+     return view('echantillon');
 });
 
 Route::get('/excel', function () {
@@ -19,14 +21,20 @@ Route::get('/excel', function () {
 })->name('excel');
 
 
-Route::get('/import-fichier-cnss', [importController::class, 'fichierCnss'])->name('fichierCnss');
+// Route::get('/import-fichier-cnss', [importController::class, 'fichierCnss'])->name('fichierCnss');
+
+Route::get('/import-fichier-cnss', [CnssController::class, 'fichierCnss'])->name('fichierCnss');
+
+
 Route::get('/update', [importController::class, 'updateHS'])->name('updateHS');
 Route::get('/insert', [importController::class, 'insertHS'])->name('insertHS');
 Route::get('/jour', [importController::class, 'iprCnn'])->name('iprCnn');
 
+
 Route::get('/somme', [importController::class, 'sommerTypepaie'])->name('sommerTypepaie');
 
 
+// Pointage coupe canne
 Route::get('/mis_a_jour_pointage_coupe', [PointageCoupeController::class, 'misAJourPointageCoupe'])->name('misAJourPointageCoupe');
 Route::get('/pointage_manquant', [PointageCoupeController::class, 'pointageManquant'])->name('pointageManquant');
 Route::get('/journalier', [PointageCoupeController::class, 'journalier'])->name('journalier');
