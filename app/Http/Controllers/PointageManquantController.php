@@ -22,8 +22,8 @@ class PointageManquantController extends Controller
 
     public function afficherToutesLesAbsences(ValidationDecadeRequest $request) {
         
-        // Affiche tableau des employés qui manquent des pontages à une plage des dates              
-            $absencesParEmploye = [];
+            // Affiche des employés actifs qui manquent des pontages par dates | direction | grade | contrat |              
+            $absencesParEmploye = [];          
 
             foreach (CarbonPeriod::create($request->debutDecade, $request->finDecade) as $jour) {
 
@@ -41,16 +41,31 @@ class PointageManquantController extends Controller
                     ) AS Matricule,
                     ? AS Date
                 ", [$date])
-                ->where('IDGrade', '=', '01')
-                ->whereIn('IDDirection', ['05'])
+                ->when(
+                    $request->contrats && !in_array('00', $request->contrats),
+                    function ($query) use ($request) {
+                        $query->whereIn('IDContrat', $request->contrats);
+                    }
+                )   
+                ->when(
+                    $request->grades && !in_array('00', $request->grades),
+                    function ($query) use ($request) {
+                        $query->whereIn('IDGrade', $request->grades);
+                    }
+                )             
+                ->when(
+                    $request->directions && !in_array('00', $request->directions),
+                    function ($query) use ($request) {
+                        $query->whereIn('IDDirection', $request->directions);
+                    }
+                )
                 ->where('IDFinActivite', '0')
                 ->where('DateEngagement', '<=', $date)
                 ->whereNotIn('Matricule', function ($query) use ($date) {
                     $query->from('D_POINTAGE_DECADAIRE')
                         ->select('Matricule')
                         ->where('DatePointage', $date);
-                })
-                //->whereIn('Matricule', [' 82861', '82861'])
+                })                
                 ->whereNotIn('Matricule', $this->lesExceptions)
                 ->get();
 

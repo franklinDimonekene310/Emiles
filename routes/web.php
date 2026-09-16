@@ -9,11 +9,11 @@ use App\Http\Controllers\CnssController;
 
 
 Route::get('/', function () {
- //return view('toast');
+ return view('Pointage');
   //return view('Excel');
      // return view('Home2');
      // return view('Modale');
-     return view('echantillon');
+     //return view('echantillon');
 });
 
 Route::get('/excel', function () {

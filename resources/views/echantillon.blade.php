@@ -22,7 +22,7 @@
         }
 
         body {
-            padding: 5px;
+           /* padding: 5px;*/
             padding-right: 10px;
         }
 
@@ -46,6 +46,9 @@
         </select>
     </div>
 
+    {{-- SCRIPT GENERAL --}}
+    <script src="{{ asset('script.js') }}"></script>
+
     {{-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> --}}
     {{-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> --}}
     <script src="{{ asset('select2\code.jquery.js') }}"></script>
@@ -54,9 +57,9 @@
     <script>
         $(document).ready(function () {
 
-            $('#grade').select2({ placeholder: 'Sélectionner un ou plusieurs grades',  allowClear: true,  width: '100%' });
+            $('#grade1').select2({ placeholder: 'Sélectionner un ou plusieurs grades',  allowClear: true,  width: '100%' });
 
-            $('#grade').on('select2:select', function (e) {
+            $('#grade1').on('select2:select', function (e) {
                 let values = $(this).val();
 
                 // Si "Tous" vient d'être sélectionné

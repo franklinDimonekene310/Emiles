@@ -16,7 +16,8 @@
     }
 
      // Gestion des routes sur le formulaire
-    function ouvrirModal(action, unTitre) {
+    function ouvrirModal(action, unTitre, data, masquer) {
+        
         const formulaire = document.getElementById('pointageForm');
         const titre = document.querySelector('.container h2');
 
@@ -25,6 +26,24 @@
         if (titre) {
             titre.innerText = unTitre;
         }
+
+        // Réafficher tous les champs
+        document.querySelectorAll('.champ').forEach(champ => {
+            champ.style.display = '';
+        });
+        
+        // Masquer les champs demandés
+        if(data && masquer) {
+            data.forEach(id => {
+                const element = document.getElementById(id);
+
+                if (element) {
+                    element.closest('.champ')?.style.setProperty('display', 'none');
+                }
+            });
+        }
+        
+
         document.getElementById('id01').style.display = 'flex';
     }
 
@@ -86,5 +105,60 @@
                 }, 500);                       
             }
         }
+
+        $('#grade').select2({ placeholder: 'Sélectionner grade(s)',  allowClear: true,  width: '100%' });
+        $('#direction').select2({ placeholder: 'Sélectionner direction(s)',  allowClear: true,  width: '100%' });
+        $('#contrat').select2({ placeholder: 'Sélectionner contrat(s)',  allowClear: true,  width: '100%' });
+
+        $('#grade').on('select2:select', function (e) {
+            let values = $(this).val();
+
+            // Si "Tous" vient d'être sélectionné
+            if (e.params.data.id === '00') {
+                // Désélectionner tous les autres
+                $(this).val(['00']).trigger('change');
+                return;
+            }
+
+            // Si un grade est sélectionné alors que "Tous" était déjà sélectionné
+            if (values.includes('00')) {
+                // Garder uniquement "Tous"
+                $(this).val(['00']).trigger('change');
+            }
+        });
+
+        $('#direction').on('select2:select', function (e) {
+            let values = $(this).val();
+
+            // Si "Tous" vient d'être sélectionné
+            if (e.params.data.id === '00') {
+                // Désélectionner tous les autres
+                $(this).val(['00']).trigger('change');
+                return;
+            }
+
+            // Si un grade est sélectionné alors que "Tous" était déjà sélectionné
+            if (values.includes('00')) {
+                // Garder uniquement "Tous"
+                $(this).val(['00']).trigger('change');
+            }
+        });
+
+        $('#contrat').on('select2:select', function (e) {
+            let values = $(this).val();
+
+            // Si "Tous" vient d'être sélectionné
+            if (e.params.data.id === '00') {
+                // Désélectionner tous les autres
+                $(this).val(['00']).trigger('change');
+                return;
+            }
+
+            // Si un grade est sélectionné alors que "Tous" était déjà sélectionné
+            if (values.includes('00')) {
+                // Garder uniquement "Tous"
+                $(this).val(['00']).trigger('change');
+            }
+        });
     });
   

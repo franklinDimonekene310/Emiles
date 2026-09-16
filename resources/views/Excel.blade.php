@@ -7,7 +7,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Excel Export</title>
-    <link rel="stylesheet" href="{{asset('style.css')}}" type="text/css">    
+    <link rel="stylesheet" href="{{asset('style.css')}}" type="text/css"> 
+
+    {{-- Lien pour select2   --}}
+    <link rel="stylesheet" href="{{asset('select2\cdn.jsdelivr.css')}}" type="text/css">  
 </head>
 <body>
         <h1>Opérations sur </h1> 
@@ -19,7 +22,7 @@
         
             <a class="btn" href="{{ route('insertHS') }}" > Insert heure</a>                         
         
-            <a class="btn" id="pointage_excel" onclick="ouvrirModal('{{ route('genererFichierPointageCoupe') }}', 'Fichier Excel pointage coupe')">Exportation Pointage coupe</a>
+            <a class="btn" id="pointage_excel" onclick="ouvrirModal('{{ route('genererFichierPointageCoupe') }}', 'Fichier Excel pointage coupe', ['direction', 'grade', 'contrat'], true)">Exportation Pointage coupe</a>
             
             <a class="btn" id="mis_a_jr" onclick="ouvrirModal('{{ route('misAJourPointageCoupe') }}', 'Mise à jour pointage coupe')">Mis à jour</a>    
                   
@@ -30,9 +33,9 @@
                 <input type="month" name="anneeMois" required>
             </form>
 
-            <a class="btn" onclick="ouvrirModal('{{ route('afficherToutesLesAbsences')}}', 'Pointage manquant')">Pointage manquant</a>          
+            <a class="btn" onclick="ouvrirModal('{{ route('afficherToutesLesAbsences')}}', 'Pointage manquant')">Pointage manquant</a> 
             
-        </div>
+        </div>       
         
         <div id="container_table">
             <table>
@@ -72,45 +75,76 @@
                     <div class="container">
                         <h2>Pointage Décadaire</h2>
 
-                           <div>
-                                <label for="debutDecade">Début décade du </label>
+                        <div class="form-group-row">
+                            <div class="form-fiel">
+                                <label for="debutDecade">Début décade </label>
                                 <input type="date" id="debutDecade" name="debutDecade" value="{{ old('debutDecade') }}">
+                            </div>                           
 
-                                <label for="finDecade">au</label>                
+                            <div class="form-field" style="flex: 0 0 30px; align-items: center; justify-content: center; color: #a0aec0;">
+                               au 
+                            </div>                            
+                            <div class="form-fiel">
+                                <label class="form-label" for="finDecade">&nbsp;</label>
                                 <input type="date" id="finDecade" name="finDecade" value="{{ old('finDecade') }}">                           
-                            </div>
+                            </div>              
+                        </div>
 
                         <div class="filter">
-
                             <div class="champ">
                                 <label for="direction">Directions</label>                
-                                <select name="direction" id="direction">                                
-                                    <option value="">Tous</option>
-                                    <option value="05">Diragro</option>
-                                    <option value="09">Finance</option>
+                                <select name="directions[]" id="direction" multiple>                                
+                                    <option value="00">TOUS</option>
+                                    <option value="01">DIR GEN</option>
+                                    <option value="03">APPROS</option>
+                                    <option value="05">AGRO</option>
+                                    <option value="06">GARAGE</option>
+                                    <option value="07">SVG</option>
+                                    <option value="08">USINE</option>
+                                    <option value="09">DAF</option>
+                                    <option value="10">PERSONNEL</option>
+                                    <option value="11">HOPITAL</option>
+                                    <option value="12">COMMERCIAL</option>
                                 </select>
                             </div>
 
                             <div class="champ">
                                 <label for="contrat">Contrats</label>                
-                                <select name="contrat" id="contrat">                                
-                                    <option value="">Tous</option>
-                                    <option value="0">Permanent</option>
-                                    <option value="1">Saisonnier</option>
+                                <select name="contrats[]" id="contrat" multiple>                                
+                                    <option value="00">TOUS</option>
+                                    <option value="0">PERMANENTS</option>
+                                    <option value="1">SAISONNIERS</option>
                                 </select>
-                            </div>
-                            <div class="champ">
-                                <label for="grade">Grades</label>                
-                                <select name="grade" id="grade" multiple>                                
-                                    <option value="">Tous</option>
-                                    <option value="13">CC1</option>
-                                    <option value="14">CC2</option>
-                                    <option value="15">CC3</option>
-                                    <option value="16">S1</option>
-                                </select>
-                            </div>
+                            </div>                            
                         </div>
-
+                        <div class="champ">
+                            <label for="grade">Grades</label>                
+                            <select name="grades[]" id="grade" multiple>                                
+                                <option value="00">TOUS</option>
+                                <option value="01">TA</option>
+                                <option value="02">ML</option>
+                                <option value="03">MS</option>
+                                <option value="04">SQ1</option>
+                                <option value="05">SQ2</option>
+                                <option value="06">SQ3</option>
+                                <option value="07">Q1</option>
+                                <option value="08">Q2</option>
+                                <option value="09">HQ</option>
+                                <option value="10">M1</option>
+                                <option value="11">M2</option>
+                                <option value="12">M3</option>
+                                <option value="13">CC1</option>
+                                <option value="14">CC2</option>
+                                <option value="15">CC3</option>
+                                <option value="16">S1</option>
+                                <option value="17">S2</option>
+                                <option value="18">S3</option>
+                                <option value="19">B4</option>
+                                <option value="20">B3</option>
+                                <option value="21">B2</option>
+                                <option value="22">B1</option>
+                            </select>
+                        </div>                        
                         <p>
                             @error('finDecade')
                                 <div class="text-danger">
@@ -131,9 +165,9 @@
                             @endif
                         </p>
 
-                        <div class="clearfix">
-                            <button type="button" class="cancelbtn">Annuler</button>
-                            <button type="submit" class="validatebtn">Valider</button>
+                        <div class="modal-actions">
+                            <button type="button" class="btn-dialogue btn-dialogue-secondary">Annuler</button>
+                            <button type="submit" class="btn-dialogue btn-dialogue-primary">Valider</button>
                         </div>
                     </div>
                 </form>
@@ -162,7 +196,13 @@
                 window.message = @json(session('success'));                
             });        
         </script>
+
+        {{-- SCRIPT GENERAL --}}
         <script src="{{ asset('script.js') }}"></script>
+
+        {{-- SCRIPT POUR SELECT 2 --}}
+        <script src="{{ asset('select2\code.jquery.js') }}"></script>
+        <script src="{{ asset('select2\cdn.jsdelivr.js') }}"></script>
 
 </body>
 </html>
