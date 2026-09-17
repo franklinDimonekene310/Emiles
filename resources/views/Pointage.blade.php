@@ -15,8 +15,7 @@
                 <form class="modal-container" id ="pointageForm" method="GET" >
                     @csrf
                     <span onclick="fermerModal()" class="modal-close-btn" title="Fermer">&times;</span>
-                    <div class="container">
-                       
+                    {{-- <div class="container">                        --}}
                         <div class="modal-title">Pointage manquant</div>
                         <div class="form-group-row">
                             {{-- <label for="debutDecade">Début décade du </label> --}}
@@ -66,7 +65,7 @@
                             <button type="button" class="btn btn-secondary">Annuler</button>
                             <button type="submit" class="btn btn-primary">Valider</button>
                         </div>
-                    </div>
+                    {{-- </div> --}}
                 </form>
         </div>
 

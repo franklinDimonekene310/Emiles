@@ -19,7 +19,7 @@
     function ouvrirModal(action, unTitre, data, masquer) {
         
         const formulaire = document.getElementById('pointageForm');
-        const titre = document.querySelector('.container h2');
+        const titre = document.querySelector('.modal-title');
 
         formulaire.action = action;
 

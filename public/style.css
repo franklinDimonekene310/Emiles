@@ -10,8 +10,7 @@
 }
 
 body {
-    background-color: rgba(110, 126, 177, 0.3);
-   
+    background-color: rgba(110, 126, 177, 0.3);   
     padding: 5px;
     padding-right: 10px;        
 }
@@ -76,28 +75,7 @@ button:hover {
   opacity:1;
 }
 
-/* Float cancel and delete buttons and add an equal width */
-.cancelbtn, .validatebtn {
-  float: left;
-  width: 50%;
-}
 
-/* Add a color to the cancel button */
-.cancelbtn {
-  background-color: #ccc;
-  color: black;
-}
-
-/* Add a color to the delete button */
-.validatebtn {
-  background-color: #3434c6;
-}
-
-/* Add padding and center-align text to the container */
-.container {
-  padding: 16px;
-  text-align: center;
-}
 
 /* The Modal ( background ) */
 .modal {
@@ -126,10 +104,10 @@ button:hover {
   background-color: #ffffff;
     border-radius: 12px; /* Coins plus arrondis pour la douceur */
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05); /* Double ombre portée pour la profondeur */
-    padding: 32px; /* Augmente considérablement l'espace intérieur */
+    padding: 25px; /* Augmente considérablement l'espace intérieur */
     position: relative;
     font-family: 'Inter', 'Roboto', sans-serif; /* Police moderne sans serif */
-    max-width: 600px; /* Taille maximale contrôlée */
+    max-width: 800px; /* Taille maximale contrôlée */
 }
 
 .modal-content label, input {  
@@ -342,21 +320,43 @@ tr:hover {background-color: rgba(223, 133, 100, .8); cursor: pointeur;}
 }
 
 
-  /* MISE EN FORME DE SELECT 2 */
-  .champ2 { text-align: left; margin-top:5px;}
-  .champ2 label {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      font-size: 15px;
-      padding-bottom: 10px;            
-  }    
 
   /* Taille du Select2 */ 
   .select2-container { width: 100% !important; margin-top: 5px; } 
   .select2-container .select2-selection--multiple { min-height: 45px; border: 1px solid #ccc; border-radius: 5px; }
 
 
-  /* === BOUTONS BOITE DE VALIDATION === */
+/* === NOUVEAU STYLE === */
+
+/* Le X en haut à droite */
+.modal-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    color: #ff4d4f; /* Garde la couleur rouge, mais un ton plus doux */
+    font-size: 1.2rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    opacity: 0.6;
+    transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.modal-close-btn:hover {
+    opacity: 1; /* Révèle l'opacité au survol */
+    transform: scale(1.1); /* Petit effet d'échelle */
+}
   
+/* Le titre principal */
+.modal-title {
+    font-size: 24px; /* Plus grand */
+    font-weight: 700; /* Plus gras */
+    color: #1a1a1a; /* Presque noir, moins agressif que le noir pur */
+    text-align: center;
+    margin-bottom: 32px; /* Espace significatif avant le premier champ */
+    letter-spacing: -0.5px; /* Touche moderne */
+}
+
 /* Le conteneur en bas pour les boutons */
 .modal-actions {
     margin-top: 32px; /* Espace significatif après le dernier champ */
@@ -367,7 +367,7 @@ tr:hover {background-color: rgba(223, 133, 100, .8); cursor: pointeur;}
 
 /* Base commune pour tous les boutons de la modal */
 .btn-dialogue {
-    padding: 12px 20px;
+    padding: 5px 10px;
     font-size: 13px;
     font-weight: 600;
     border-radius: 8px; /* Coins arrondis */
@@ -411,8 +411,9 @@ tr:hover {background-color: rgba(223, 133, 100, .8); cursor: pointeur;}
 /* Conteneur pour CHAQUE ligne de champ (ex: Dates, Directions+Contrats, Grades) */
 .form-group-row {
     margin-bottom: 20px; /* Espace vertical régulier entre les groupes */
-    display: flex;
-    gap: 16px; /* Espace entre les champs sur la même ligne */
+    display: flex;     
+    row-gap: 5px; /* Espace entre les champs sur la même colonne */
+    column-gap: 16px; /* Espace entre les champs sur la même ligne */
     flex-wrap: wrap; /* Pour la réactivité */
 }
 
@@ -422,4 +423,50 @@ tr:hover {background-color: rgba(223, 133, 100, .8); cursor: pointeur;}
     display: flex;
     flex-direction: column; /* Label au-dessus du champ */
     gap: 6px; /* Espace entre label et champ */
+}
+
+/* Les labels de texte (ex: "Début décade") */
+.form-label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #4a5568; /* Couleur gris foncé pour moins de contraste */
+    margin-bottom: 0; /* Géré par .form-field gap */    
+}
+
+/* Sélecteur commun pour tous les types d'inputs */
+.form-input {
+    width: 100%;
+    padding: 5px 10px; /* Rembourrage intérieur généreux */
+    font-size: 16px; /* Taille de police lisible (au moins 16px pour mobile) */
+    border: 1px solid #e2e8f0; /* Bordure grise très claire */
+    border-radius: 8px; /* Coins arrondis modérés */
+    background-color: #ffffff;
+    transition: border-color 0.2s, box-shadow 0.2s; /* Transitions douces */
+    color: #1a1a1a;
+    box-sizing: border-box; /* Crucial pour le padding */
+}
+
+/* Style commun pour le placeholder */
+.form-input::placeholder {
+    color: #a0aec0; /* Gris placeholder standard */
+    opacity: 1; /* Assure la visibilité */
+}
+
+/* Style commun pour l'état actif (focus) */
+.form-input:focus {
+    outline: none; /* Supprime le contour par défaut */
+    border-color: #5e4bd9; /* Couleur de focus (basée sur le bouton valider) */
+    box-shadow: 0 0 0 3px rgba(94, 75, 217, 0.1); /* Ombre douce de couleur de focus */
+}
+
+.form-select:focus {
+    outline: none !important; /* Supprime le contour par défaut */
+    border-color: #5e4bd9 !important; /* Couleur de focus (basée sur le bouton valider) */
+    box-shadow: 0 0 0 3px rgba(94, 75, 217, 0.1) !important; /* Ombre douce de couleur de focus */
+}
+
+/* Style pour les champs de date pour qu'ils ressemblent aux autres */
+input[type="date"].form-input {
+    height: 35px; /* Hauteur uniforme */
+    line-height: 1;
 }

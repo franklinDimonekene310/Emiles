@@ -92,7 +92,7 @@
 
 /* Style pour les champs de date pour qu'ils ressemblent aux autres */
 input[type="date"].form-input {
-    height: 48px; /* Hauteur uniforme */
+    height: 45px; /* Hauteur uniforme */
     line-height: 1;
 }
 

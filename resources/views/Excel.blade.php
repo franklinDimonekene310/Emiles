@@ -71,28 +71,28 @@
         <div id="id01" class="modal">                
                 <form class="modal-content" id ="pointageForm" method="GET" >
                     @csrf
-                    <span onclick="fermerModal()" class="close" title="Fermer">&times;</span>
-                    <div class="container">
-                        <h2>Pointage Décadaire</h2>
+                   
+                    <span onclick="fermerModal()" class="modal-close-btn" title="Fermer">&times;</span>                   
+                        
+                        <div class="modal-title">Pointage Décadaire</div>
 
                         <div class="form-group-row">
-                            <div class="form-fiel">
-                                <label for="debutDecade">Début décade </label>
-                                <input type="date" id="debutDecade" name="debutDecade" value="{{ old('debutDecade') }}">
+                            <div class="form-field">                                
+                                <input class="form-input" type="date" id="debutDecade" name="debutDecade" value="{{ old('debutDecade') }}">
                             </div>                           
 
-                            <div class="form-field" style="flex: 0 0 30px; align-items: center; justify-content: center; color: #a0aec0;">
+                            <div class="form-field form-label" style="flex: 0 0 30px; align-items: center; justify-content: center; color: #a0aec0;">
                                au 
-                            </div>                            
-                            <div class="form-fiel">
-                                <label class="form-label" for="finDecade">&nbsp;</label>
-                                <input type="date" id="finDecade" name="finDecade" value="{{ old('finDecade') }}">                           
+                            </div>
+
+                            <div class="form-field">                                
+                                <input class="form-input" type="date" id="finDecade" name="finDecade" value="{{ old('finDecade') }}">                           
                             </div>              
                         </div>
 
-                        <div class="filter">
-                            <div class="champ">
-                                <label for="direction">Directions</label>                
+                        <div class="form-group-row champ">   
+                            <div class="form-field">                                  
+                                <label for="direction" class="form-label">Directions</label>              
                                 <select name="directions[]" id="direction" multiple>                                
                                     <option value="00">TOUS</option>
                                     <option value="01">DIR GEN</option>
@@ -108,8 +108,8 @@
                                 </select>
                             </div>
 
-                            <div class="champ">
-                                <label for="contrat">Contrats</label>                
+                            <div class="form-field">
+                                <label for="contrat" class="form-label">Contrats</label>                
                                 <select name="contrats[]" id="contrat" multiple>                                
                                     <option value="00">TOUS</option>
                                     <option value="0">PERMANENTS</option>
@@ -117,8 +117,8 @@
                                 </select>
                             </div>                            
                         </div>
-                        <div class="champ">
-                            <label for="grade">Grades</label>                
+                        <div class="form-group-row champ">
+                            <label for="grade" class="form-label">Grades</label>                
                             <select name="grades[]" id="grade" multiple>                                
                                 <option value="00">TOUS</option>
                                 <option value="01">TA</option>
@@ -166,10 +166,9 @@
                         </p>
 
                         <div class="modal-actions">
-                            <button type="button" class="btn-dialogue btn-dialogue-secondary">Annuler</button>
+                            <button type="button" class="btn-dialogue btn-dialogue-secondary" onclick="fermerModal()">Annuler</button>
                             <button type="submit" class="btn-dialogue btn-dialogue-primary">Valider</button>
-                        </div>
-                    </div>
+                        </div>                   
                 </form>
         </div>
 
