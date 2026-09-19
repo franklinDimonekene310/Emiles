@@ -22,12 +22,10 @@
         
             <a class="btn" href="{{ route('insertHS') }}" > Insert heure</a>                         
         
-            <a class="btn" id="pointage_excel" onclick="ouvrirModal('{{ route('genererFichierPointageCoupe') }}', 'Fichier Excel pointage coupe', ['direction', 'grade', 'contrat'], true)">Exportation Pointage coupe</a>
+            <a class="btn" id="pointage_excel" onclick="ouvrirModal('{{ route('genererFichierPointageCoupe') }}', 'Fichier Excel pointage coupe',  true)">Exportation Pointage coupe</a>
             
-            <a class="btn" id="mis_a_jr" onclick="ouvrirModal('{{ route('misAJourPointageCoupe') }}', 'Mise à jour pointage coupe')">Mis à jour</a>    
-                  
-            {{-- <a class="btn" onclick="ouvrirModal('{{ route('pointageManquant')}}', 'Pointage manquant')">Pointage manquant</a> --}}
-            
+            <a class="btn" id="mis_a_jr" onclick="ouvrirModal('{{ route('misAJourPointageCoupe') }}', 'Mise à jour pointage coupe', true)">Mis à jour</a>   
+           
             <form action="{{ route('fichierCnss') }}" method="GET" style="display: inline">            
                 <button class="btn" type="submit">Fichier cnss</button>
                 <input type="month" name="anneeMois" required>
@@ -74,7 +72,7 @@
                    
                     <span onclick="fermerModal()" class="modal-close-btn" title="Fermer">&times;</span>                   
                         
-                        <div class="modal-title">Pointage Décadaire</div>
+                        <div class="modal-title" id="modal-title">Pointage Décadaire</div>
 
                         <div class="form-group-row">
                             <div class="form-field">                                
@@ -90,10 +88,10 @@
                             </div>              
                         </div>
 
-                        <div class="form-group-row champ">   
+                        <div class="form-group-row">   
                             <div class="form-field">                                  
                                 <label for="direction" class="form-label">Directions</label>              
-                                <select name="directions[]" id="direction" multiple>                                
+                                <select  name="directions[]" id="direction" multiple>                                
                                     <option value="00">TOUS</option>
                                     <option value="01">DIR GEN</option>
                                     <option value="03">APPROS</option>
@@ -110,14 +108,14 @@
 
                             <div class="form-field">
                                 <label for="contrat" class="form-label">Contrats</label>                
-                                <select name="contrats[]" id="contrat" multiple>                                
+                                <select  name="contrats[]" id="contrat" multiple>                                
                                     <option value="00">TOUS</option>
                                     <option value="0">PERMANENTS</option>
                                     <option value="1">SAISONNIERS</option>
                                 </select>
                             </div>                            
                         </div>
-                        <div class="form-group-row champ">
+                        <div class="form-group-row">
                             <label for="grade" class="form-label">Grades</label>                
                             <select name="grades[]" id="grade" multiple>                                
                                 <option value="00">TOUS</option>

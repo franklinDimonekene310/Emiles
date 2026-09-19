@@ -16,10 +16,11 @@
     }
 
      // Gestion des routes sur le formulaire
-    function ouvrirModal(action, unTitre, data, masquer) {
+    function ouvrirModal(action, unTitre, masquer) {
         
         const formulaire = document.getElementById('pointageForm');
         const titre = document.querySelector('.modal-title');
+        const groupes = document.querySelectorAll('.form-group-row');
 
         formulaire.action = action;
 
@@ -27,22 +28,11 @@
             titre.innerText = unTitre;
         }
 
-        // Réafficher tous les champs
-        document.querySelectorAll('.champ').forEach(champ => {
-            champ.style.display = '';
-        });
-        
-        // Masquer les champs demandés
-        if(data && masquer) {
-            data.forEach(id => {
-                const element = document.getElementById(id);
-
-                if (element) {
-                    element.closest('.champ')?.style.setProperty('display', 'none');
-                }
-            });
-        }
-        
+        groupes.forEach((div, index) => {
+            if(index > 0) {
+                div.style.display = masquer ? 'none' : '';
+            }
+        } );  
 
         document.getElementById('id01').style.display = 'flex';
     }
@@ -57,6 +47,40 @@
 
         var modal = document.getElementById('id01');
         const cancelBtn = document.querySelector('.cancelbtn');
+        const modalTitle = document.querySelector('#modal-title');
+
+        // Gestion de deplacement de la boite de dialogue
+        let deplacement = false;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        modalTitle.addEventListener('mousedown', function(e) {
+            
+            if (e.button !== 0) return;        
+
+            const rect = modalTitle.getBoundingClientRect();
+
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+
+            deplacement = true;
+
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!deplacement) return;
+
+            const modalContent = modal.querySelector('.modal-content');
+
+            modalContent.style.left = (e.clientX - offsetX) + 'px';
+            modalContent.style.top = (e.clientY - offsetY) + 'px';
+        });
+
+        document.addEventListener('mouseup', function() {
+            deplacement = false;
+        }); 
+
 
         // When the user clicks anywhere outside of the modal, close it
         window.onclick = function(event) {
@@ -65,11 +89,10 @@
             }
         }
       
-       // Rouvrir automatiquement le modal en cas d'erreur
-      
+       // Rouvrir automatiquement le modal en cas d'erreur      
         if (cancelBtn) {
             cancelBtn.addEventListener('click', () => {
-                document.getElementById('id01').style.display = 'none';
+                modal.style.display = 'none';
             });
         }
 
@@ -91,8 +114,8 @@
 
             // Bouton fermeture
             closeBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            closeToast();
+                e.preventDefault();
+                closeToast();
             });
 
             function closeToast() {
@@ -106,9 +129,10 @@
             }
         }
 
-        $('#grade').select2({ placeholder: 'Sélectionner grade(s)',  allowClear: true,  width: '100%' });
-        $('#direction').select2({ placeholder: 'Sélectionner direction(s)',  allowClear: true,  width: '100%' });
-        $('#contrat').select2({ placeholder: 'Sélectionner contrat(s)',  allowClear: true,  width: '100%' });
+        $('#grade').select2({ placeholder: 'grade(s)',  allowClear: true,  width: '100%' });
+        $('#direction').select2({ placeholder: 'direction(s)',  allowClear: true,  width: '100%' });
+        $('#contrat').select2({ placeholder: 'contrat(s)',  allowClear: true,  width: '100%' });
+        $('.mon-select').select2({containerCssClass: 'custom-select2'});
 
         $('#grade').on('select2:select', function (e) {
             let values = $(this).val();

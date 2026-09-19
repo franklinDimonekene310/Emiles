@@ -143,7 +143,7 @@ class PointageCoupeController extends Controller
         // Role : 1. Recuperation des pointages dans la table D_POINTAGE_DECADAIRE, 2. Récupération des équipes dans la table POINTAGE_JOURNALIERS
         // Objectif : Générer un fichier Excel pour le traitement de l'insertion dans la table POINTAGE_JOURNALIERS       
         // contraintes : DatePointage et IDPointage        
-       
+      
         $fichierDeBase = $this->genererTableauDeBase($request);  
         
         // Code à améloirer 

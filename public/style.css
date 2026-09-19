@@ -77,74 +77,82 @@ button:hover {
 
 
 
-/* The Modal ( background ) */
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 100; /* Sit on top */
-  inset: 0;
- 
-  justify-content : center;
-  align-items: center;
-  overflow: hidden; /* Enable scroll if needed */
+    /* The Modal ( background ) */
+    .modal {
+        /*display: none;  Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 100; /* Sit on top */
+        inset: 0;
+        
+        justify-content : center;
+        align-items: center;
+        overflow: hidden; /* Enable scroll if needed */
 
-  /* Fond semi-transparent */
-  background: rgba(0, 0, 0, 0.30);
+        /* Fond semi-transparent */
+        background: rgba(0, 0, 0, 0.30);
 
-     /* Flou de l'arrière-plan */
-  backdrop-filter: blur(1px);
-  padding-top: 20px;
+        /* Flou de l'arrière-plan */
+        backdrop-filter: blur(1px);
+        padding-top: 20px;
 
-  box-shadow: 5px 5px rgba(45, 34, 34, 0.3);   
-}
+        box-shadow: 5px 5px rgba(45, 34, 34, 0.3);   
+    }
 
 
-/* Modal Content/Box */
-.modal-content {
-  background-color: #ffffff;
-    border-radius: 12px; /* Coins plus arrondis pour la douceur */
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05); /* Double ombre portée pour la profondeur */
-    padding: 25px; /* Augmente considérablement l'espace intérieur */
-    position: relative;
-    font-family: 'Inter', 'Roboto', sans-serif; /* Police moderne sans serif */
-    max-width: 800px; /* Taille maximale contrôlée */
-}
+    /* Modal Content/Box */
+    .modal-content {
+        background-color: #ffffff;
+        border-radius: 12px; /* Coins plus arrondis pour la douceur */
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05); /* Double ombre portée pour la profondeur */
+        padding: 25px; /* Augmente considérablement l'espace intérieur */
+        
+        position: absolute;
+        font-family: 'Inter', 'Roboto', sans-serif; /* Police moderne sans serif */
+        max-width: 800px; /* Taille maximale contrôlée */
 
-.modal-content label, input {  
-  padding: 5px;
-  font-family: 'Times New Roman', Times, serif;
-  font-size: 1rem;
-}
+        /* Position initiale */
+        left: 50%;
+        top: 30px;
 
-/* Style the horizontal ruler */
-hr {
-  border: 1px solid #f1f1f1;
-  margin-bottom: 25px;
-}
+        /*centrage horizontal */
+        transform: translatex(-50%);
+    }
 
-/* The Modal Close Button (x) */
-.close {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  font-size: 32px;
-  font-weight: bold;
-  color: #f44326;
-  cursor: pointer;
-}
+    .modal-content label, input {  
+        padding: 5px;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 1rem;
+    }
 
-.close:hover,
-.close:focus {
-  color: #f44336;
-  cursor: pointer;
-}
+    /* Style the horizontal ruler */
+    hr {
+        border: 1px solid #f1f1f1;
+        margin-bottom: 25px;
+    }
 
-/* Clear floats */
-.clearfix {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
+    /* The Modal Close Button (x) */
+    .close {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        font-size: 32px;
+        font-weight: bold;
+        color: #f44326;
+        cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: #f44336;
+        cursor: pointer;
+    }
+
+    /* Clear floats */
+    .clearfix {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
 
 /* Change styles for cancel button and delete button on extra small screens */
 @media screen and (max-width: 300px) {
@@ -288,42 +296,9 @@ tr:nth-child(even) {background-color: #f2f2f2;}
 tr:hover {background-color: rgba(223, 133, 100, .8); cursor: pointeur;}
 
 
-/*=======================================
-         MIS EN FORME DE SELECT
-=========================================*/
-
-.champ {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  flex-grow: 1;
-  text-align: left;
-}
-
-.champ label {
-  text-align: justify;
-  padding-left: inherit;
-  margin-top: 10px;
-  font-size: medium;
-}
-
-.champ select {
-    padding: 5px;
-    width: stretch;
-    cursor: pointer;
-}
-
-.filter {
-  display: flex;  
-  margin-top: 20px;
-  gap: 3px;
-}
-
-
-
-  /* Taille du Select2 */ 
-  .select2-container { width: 100% !important; margin-top: 5px; } 
-  .select2-container .select2-selection--multiple { min-height: 45px; border: 1px solid #ccc; border-radius: 5px; }
+/* Taille du Select2 */ 
+.select2-container { width: 100% !important; margin-top: 5px; } 
+.select2-container .select2-selection--multiple { min-height: 45px; border: 1px solid #ccc; border-radius: 5px; }
 
 
 /* === NOUVEAU STYLE === */
@@ -355,6 +330,8 @@ tr:hover {background-color: rgba(223, 133, 100, .8); cursor: pointeur;}
     text-align: center;
     margin-bottom: 32px; /* Espace significatif avant le premier champ */
     letter-spacing: -0.5px; /* Touche moderne */
+    cursor: move;
+    user-select: none;
 }
 
 /* Le conteneur en bas pour les boutons */
@@ -469,4 +446,83 @@ tr:hover {background-color: rgba(223, 133, 100, .8); cursor: pointeur;}
 input[type="date"].form-input {
     height: 35px; /* Hauteur uniforme */
     line-height: 1;
+}
+
+
+/* --- Surcharges CSS pour Select2 --- */
+
+/* Conteneur principal */
+.select2-container--default .select2-selection--single,
+.select2-container--default .select2-selection--multiple {
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    min-height: 35px !important;
+    padding: 6px 12px !important;
+    font-size: 15px !important;
+    font-family: inherit !important;
+    transition: border-color 0.2s, box-shadow 0.2s !important;
+    background-color: #ffffff !important;
+}
+
+/* Texte sélectionné et Placeholder */
+.select2-container--default .select2-selection--single .select2-selection__rendered,
+.select2-container--default .select2-selection--multiple .select2-selection__rendered {
+    color: #1a1a1a !important;
+    line-height: 30px !important;
+    padding-left: 0 !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__placeholder,
+.select2-container--default .select2-selection--multiple .select2-selection__placeholder {
+    color: #a0aec0 !important;
+}
+
+/* Flèche du sélecteur (Select simple) */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 35px !important;
+    right: 10px !important;
+}
+
+/* État actif (Focus) */
+.select2-container--default.select2-container--focus .select2-selection--single,
+.select2-container--default.select2-container--focus .select2-selection--multiple,
+.select2-container--open .select2-selection--single,
+.select2-container--open .select2-selection--multiple {
+    border-color: #5e4bd9 !important;
+    box-shadow: 0 0 0 3px rgba(94, 75, 217, 0.1) !important;
+    outline: none !important;
+}
+
+/* Badges / Tags (Select2 Multiple) */
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #f1f3f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    color: #334155 !important;
+    padding: 2px 8px !important;
+    margin-top: 4px !important;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: #64748b !important;
+    margin-right: 6px !important;
+    border: none !important;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+    color: #ef4444 !important;
+    background: transparent !important;
+}
+
+/* Menu déroulant (Dropdown) */
+.select2-dropdown {
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    overflow: hidden !important;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: #5e4bd9 !important; /* Même couleur violette que le bouton */
+    color: #ffffff !important;
 }

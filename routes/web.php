@@ -12,7 +12,7 @@ Route::get('/', function () {
  return view('Pointage');
   //return view('Excel');
      // return view('Home2');
-     // return view('Modale');
+      //return view('Modale');
      //return view('echantillon');
 });
 
